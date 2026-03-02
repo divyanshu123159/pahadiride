@@ -80,46 +80,10 @@
         </div>
     </main>
 
-   <script>
-    let currentAccountType = 'passenger';
-
-    // 1. THIS IS THE NEW PART: Check the URL when the page loads
-    window.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        if(params.get('type') === 'driver') {
-            // Automatically switch to driver mode if the URL says ?type=driver
-            setAccountType('driver');
-        }
-    });
-
-    // 2. The function that switches the form (Same as before)
-    function setAccountType(type) {
-        currentAccountType = type;
-        const btnPassenger = document.getElementById('btn-passenger');
-        const btnDriver = document.getElementById('btn-driver');
-        const driverFields = document.getElementById('driver-fields');
-        const vehicleInput = document.getElementById('signup-vehicle');
-        const rcInput = document.getElementById('signup-rc');
-
-        if (type === 'driver') {
-            btnDriver.classList.add('active');
-            btnPassenger.classList.remove('active');
-            driverFields.style.display = 'flex';
-            vehicleInput.required = true;
-            rcInput.required = true;
-        } else {
-            btnPassenger.classList.add('active');
-            btnDriver.classList.remove('active');
-            driverFields.style.display = 'none';
-            vehicleInput.required = false;
-            rcInput.required = false;
-        }
-    }
-
-    
-</script>
+   
     <script src="script.js"></script>
 </body>
 
 </html>
+
 
