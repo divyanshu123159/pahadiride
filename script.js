@@ -153,7 +153,7 @@ function filterAndDisplayResults(fromLocation, toLocation) {
 
 }
 // Paste your Web App URL between the quotes
-const databaseURL = "https://script.google.com/macros/s/AKfycbxax9oM7y3KqpgNSZayNRleQC8FjkGtGZ9GnaP6Uw/dev"; 
+const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec"; 
 
 function handleSignup(event) {
     event.preventDefault(); // This stops the page from refreshing
@@ -182,3 +182,4 @@ function handleSignup(event) {
         alert("Something went wrong. Please check your internet.");
     });
 }
+
