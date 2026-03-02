@@ -150,4 +150,39 @@ function filterAndDisplayResults(fromLocation, toLocation) {
         // Add the new card HTML to the grid
         grid.innerHTML += cardHTML;
     });
+
 }
+// 1. Paste your Google Apps Script URL here
+const databaseURL = "https://script.google.com/macros/s/AKfycbxax9oM7y3KqpgNSZayNRleQC8FjkGtGZ9GnaP6Uw/dev"; 
+
+// 2. This function listens for the "Register" button click
+document.getElementById('registrationForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevents the page from refreshing
+
+    const formData = {
+        name: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        route: document.getElementById('route').value, // Ensure this ID exists in signup.html
+        vehicle: document.getElementById('vehicleNumber').value || "Passenger",
+        timestamp: new Date().toISOString()
+    };
+
+    // 3. This sends the data to your Google Sheet
+    fetch(databaseURL, {
+        method: 'POST',
+        mode: 'no-cors', // Helps avoid common browser errors
+        cache: 'no-cache',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(() => {
+        alert("Success! Your details have been saved.");
+        window.location.href = "signin.html"; // Redirects them after they register
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Something went wrong. Please try again.");
+    });
+});
