@@ -6,6 +6,8 @@
     <title>Sign In | PahadiRide</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
 </head>
 <body class="bg-gray">
 
@@ -23,15 +25,15 @@
                 <p>Sign in to manage your rides or listings.</p>
             </div>
 
-            <form action="index.html" method="GET" class="auth-form">
+           <form id="login-form" class="auth-form">
                 <div class="input-group">
-                    <label>Phone Number or Email</label>
-                    <input type="text" placeholder="Enter your details" required>
+                    <label>Registered Phone Number</label>
+                    <input type="tel" id="login-phone" pattern="[0-9]{10}" placeholder="Enter your 10-digit number" required>
                 </div>
                 
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" placeholder="••••••••" required>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
                 </div>
 
                 <div class="auth-options">
@@ -41,14 +43,37 @@
                     <a href="forgot-password.html" class="forgot-password">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="proceed-btn auth-btn">Sign In</button>
+                <button type="submit" class="proceed-btn auth-btn" id="login-btn">Sign In</button>
             </form>
 
             <div class="auth-footer">
-    <p>Don't have an account? <a href="signup.html">Create one now</a></p>
-</div>
+                <p>Don't have an account? <a href="signup.html">Create one now</a></p>
+            </div>
         </div>
     </main>
 
+   <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            // 1. Grab the phone number they just typed
+            const userPhone = document.getElementById('login-phone').value;
+            
+            // 2. Save it to the Browser's Memory (The ID Badge)
+            localStorage.setItem('pahadiRideUser', userPhone);
+            
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+            
+            // 3. Send them to the dashboard
+            setTimeout(() => {
+                window.location.href = "dashboard.html"; 
+            }, 800);
+        });
+    </script>
+</body>
+</html>
+
+        
 </body>
 </html>
