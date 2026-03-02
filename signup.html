@@ -32,16 +32,16 @@
                 </button>
             </div>
 
-            <form id="signup-form" class="auth-form" onsubmit="handleSignup(event)">
+           <form id="registrationForm" class="auth-form" onsubmit="handleSignup(event)">
                 
                 <div class="input-group">
                     <label>Full Name</label>
-                    <input type="text" id="signup-name" placeholder="e.g., Divyansu Rudola" required>
+                    <input type="text" id="fullname" placeholder="e.g., Divyansu Rudola" required>
                 </div>
                 
                 <div class="input-group">
                     <label>Phone Number (10 digits)</label>
-                    <input type="tel" id="signup-phone" pattern="[0-9]{10}" placeholder="9876543210" required>
+                    <input type="tel" id="phone" pattern="[0-9]{10}" placeholder="9876543210" required>
                 </div>
 
                 <div class="input-group">
@@ -127,4 +127,5 @@
     }
 </script>
 </body>
+
 </html>
