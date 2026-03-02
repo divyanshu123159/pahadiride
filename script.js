@@ -187,3 +187,22 @@ function handleSignup(event) {
         alert("Submission failed. Check your internet.");
     });
 }
+document.getElementById('updateRouteForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const updateData = {
+        action: "update", // This tells the Google Script to find and replace
+        phone: document.getElementById('login-phone').value,
+        route: document.getElementById('update-route').value,
+        price: document.getElementById('update-price').value,
+        timestamp: new Date().toLocaleString()
+    };
+
+    fetch(databaseURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(updateData)
+    })
+    .then(() => alert("Ride details updated successfully!"))
+    .catch(err => console.error("Update failed:", err));
+});
