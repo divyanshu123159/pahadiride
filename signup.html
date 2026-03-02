@@ -6,6 +6,8 @@
     <title>Create Account | PahadiRide</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
 </head>
 <body class="bg-gray">
 
@@ -32,16 +34,16 @@
                 </button>
             </div>
 
-           <form id="registrationForm" class="auth-form" onsubmit="handleSignup(event)">
+            <form id="signup-form" class="auth-form">
                 
                 <div class="input-group">
                     <label>Full Name</label>
-                    <input type="text" id="fullname" placeholder="e.g., Divyansu Rudola" required>
+                    <input type="text" id="signup-name" placeholder="e.g., Divyansu Rudola" required>
                 </div>
                 
                 <div class="input-group">
                     <label>Phone Number (10 digits)</label>
-                    <input type="tel" id="phone" pattern="[0-9]{10}" placeholder="9876543210" required>
+                    <input type="tel" id="signup-phone" pattern="[0-9]{10}" placeholder="9876543210" required>
                 </div>
 
                 <div class="input-group">
@@ -79,11 +81,7 @@
             </div>
         </div>
     </main>
-
-   
-    <script src="script.js"></script>
+    
+ <script src="script.js" defer></script>
 </body>
-
 </html>
-
-
