@@ -1,3 +1,12 @@
+// Register Service Worker for PWA Install
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registered!', reg))
+            .catch(err => console.error('Service Worker failed!', err));
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     // --- 1. GLOBAL NAVBAR LOGIN CHECK ---
     const loggedInPhone = localStorage.getItem('pahadiRideUser');
