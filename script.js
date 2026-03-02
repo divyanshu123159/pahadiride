@@ -156,17 +156,21 @@ function filterAndDisplayResults(fromLocation, toLocation) {
 const databaseURL = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec"; 
 
 function handleSignup(event) {
-    event.preventDefault(); // This stops the page from refreshing
+    event.preventDefault(); 
 
-    // This matches the IDs exactly from your 14th screenshot
+    // Getting the success toast from your HTML
+    const successToast = document.getElementById('signup-success');
+
     const formData = {
         name: document.getElementById('fullname').value, 
         phone: document.getElementById('phone').value,
-        // Using a fallback for fields that might be hidden (like Driver fields)
-        route: document.getElementById('route')?.value || "General",
-        vehicle: document.getElementById('vehicleNumber')?.value || "Passenger",
-        timestamp: new Date().toISOString()
+        // These now match your HTML IDs exactly
+        vehicle: document.getElementById('signup-vehicle')?.value || "Passenger",
+        rc_number: document.getElementById('signup-rc')?.value || "N/A",
+        timestamp: new Date().toLocaleString()
     };
+
+    if (successToast) successToast.style.display = 'flex';
 
     fetch(databaseURL, {
         method: 'POST',
@@ -174,13 +178,12 @@ function handleSignup(event) {
         body: JSON.stringify(formData)
     })
     .then(() => {
-        alert("Registration Successful!");
-        window.location.href = "signin.html"; 
+        setTimeout(() => {
+            window.location.href = "signin.html"; 
+        }, 2000);
     })
     .catch(error => {
         console.error('Error!', error);
-        alert("Something went wrong. Please check your internet.");
+        alert("Submission failed. Check your internet.");
     });
 }
-
-
