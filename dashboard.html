@@ -1,23 +1,187 @@
-<main class="auth-container">
-    <div class="auth-card">
-        <h2>Driver Dashboard</h2>
-        <p>Update your ride details for today.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard | PahadiRide</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+</head>
+<body class="bg-gray">
+
+    <nav class="navbar dashboard-nav">
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a></div>
+        <div class="nav-links">
+            <button class="sign-in-btn" style="background-color: transparent; color: var(--text-dark); border: 1px solid #cbd5e1;" onclick="logout()">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
         
-        <form id="updateRouteForm" class="auth-form">
-            <div class="input-group">
-                <label>Registered Phone Number</label>
-                <input type="tel" id="login-phone" placeholder="9876543210" required>
+        <div class="dashboard-header">
+            <div class="driver-profile dashboard-profile">
+                <div class="driver-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                <div>
+                    <h2 class="driver-name" style="font-size: 1.5rem;">
+                        <span id="driver-name-display">Loading...</span> 
+                        <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                    </h2>
+                    <p class="driver-vehicle" id="driver-vehicle-display">Loading vehicle data...</p>
+                </div>
             </div>
-            <hr>
-            <div class="input-group">
-                <label>Current Route (From - To)</label>
-                <input type="text" id="update-route" placeholder="e.g., Tehri - Dehradun" required>
+            
+            <div class="status-card">
+                <div class="status-info">
+                    <h3 id="status-text" style="color: #16a34a;">Listing is LIVE</h3>
+                    <p>Passengers can see your contact number.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="status-toggle" checked onchange="toggleStatus()">
+                    <span class="slider round"></span>
+                </label>
             </div>
-            <div class="input-group">
-                <label>New Price (₹)</label>
-                <input type="number" id="update-price" placeholder="400" required>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-route" style="color: var(--primary-blue); margin-right: 0.5rem;"></i> Update Current Trip</h3>
             </div>
-            <button type="submit" class="proceed-btn">Update My Ride</button>
-        </form>
-    </div>
-</main>
+            <div class="card-body">
+                <form id="update-trip-form" class="dashboard-form" onsubmit="saveChanges(event)">
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <select id="update-from" required>
+                                <option value="Tehri Garhwal" selected>Tehri Garhwal</option>
+                                <option value="Dehradun">Dehradun</option>
+                                <option value="Rishikesh">Rishikesh</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>To</label>
+                            <select id="update-to" required>
+                                <option value="Dehradun" selected>Dehradun</option>
+                                <option value="Delhi (NCR)">Delhi (NCR)</option>
+                                <option value="Srinagar">Srinagar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Departure Time</label>
+                            <input type="time" id="update-time" value="08:30" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Seats Available</label>
+                            <input type="number" id="update-seats" value="3" min="0" max="10" required>
+                        </div>
+                    </div>
+<div class="input-group">
+                        <label>Profile Photo Link (Optional)</label>
+                        <input type="url" id="update-photo" placeholder="Paste an image link here...">
+                    </div>
+                    <div class="input-group">
+                        <label>Price per Seat (₹)</label>
+                        <input type="number" id="update-price" value="400" required>
+                    </div>
+
+                    <div id="success-message" class="success-toast" style="display: none; margin-top: 1rem;">
+                        <i class="fa-solid fa-circle-check"></i> Trip updated successfully!
+                    </div>
+
+                    <button type="submit" class="proceed-btn update-btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Use your LATEST deployed Google Script URL here!
+        const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+
+        function toggleStatus() {
+            const toggle = document.getElementById('status-toggle');
+            const statusText = document.getElementById('status-text');
+            
+            if (toggle.checked) {
+                statusText.textContent = "Listing is LIVE";
+                statusText.style.color = "#16a34a"; // Green
+            } else {
+                statusText.textContent = "Listing is OFFLINE";
+                statusText.style.color = "#64748b"; // Gray
+            }
+        }
+
+       function saveChanges(event) {
+    event.preventDefault();
+    const loggedInPhone = localStorage.getItem('pahadiRideUser');
+    
+    const tripData = {
+        action: "updateTrip",
+        phone: loggedInPhone,
+        from: document.getElementById('update-from').value,
+        to: document.getElementById('update-to').value,
+        time: document.getElementById('update-time').value,
+        seats: document.getElementById('update-seats').value,
+        price: document.getElementById('update-price').value,
+        photo: document.getElementById('update-photo').value // NEW
+    };
+    fetch(databaseURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(tripData)
+    })
+    .then(() => {
+        document.getElementById('success-message').style.display = 'flex';
+        setTimeout(() => { document.getElementById('success-message').style.display = 'none'; }, 3000);
+    })
+    .catch(err => alert("Update failed: " + err));
+}
+
+        function logout() {
+            // Shred the ID badge and send them back to the home page
+            localStorage.removeItem('pahadiRideUser');
+            window.location.href = 'index.html';
+        }
+      
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Check the browser memory for the phone number
+            const loggedInPhone = localStorage.getItem('pahadiRideUser');
+            
+            // 2. If they bypassed the login page, kick them back
+            if (!loggedInPhone) {
+                alert("Please sign in first to access your dashboard.");
+                window.location.href = "signin.html";
+                return;
+            }
+            
+            // 3. Ask Google Sheets for this phone number's data
+            fetch(databaseURL + "?phone=" + loggedInPhone)
+                .then(response => response.json()) 
+                .then(data => {
+                    if (data.found) {
+                        // Put their real data on the screen
+                        document.getElementById('driver-name-display').innerText = data.name;
+                        document.getElementById('driver-vehicle-display').innerText = data.vehicle + " • " + data.rc_number;
+                    } else {
+                        alert("Account not found. Let's get you registered!");
+                        localStorage.removeItem('pahadiRideUser'); 
+                        window.location.href = "signup.html";
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching user data:", err);
+                    document.getElementById('driver-name-display').innerText = "Driver";
+                    document.getElementById('driver-vehicle-display').innerText = "Unable to load vehicle details.";
+                });
+        });
+    </script>
+</body>
+</html>
