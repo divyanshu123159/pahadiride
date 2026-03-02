@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Drivers | PahadiRide</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a></div>
+        <div class="nav-links">
+            <a href="index.html" class="help-link">Home</a>
+        </div>
+    </nav>
+
+    <div class="compact-search">
+        <form action="search.html" method="GET" class="booking-box compact-box">
+            <div class="input-group">
+                <label>From</label>
+                <select name="from" id="search-from">
+                    <option value="Tehri Garhwal">Tehri Garhwal</option>
+                    <option value="Dehradun">Dehradun</option>
+                    <option value="Rishikesh">Rishikesh</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>To</label>
+                <select name="to" id="search-to">
+                    <option value="Dehradun">Dehradun</option>
+                    <option value="Delhi (NCR)">Delhi (NCR)</option>
+                    <option value="Srinagar">Srinagar</option>
+                    <option value="Haridwar">Haridwar</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" name="date" id="search-date">
+            </div>
+            <button type="submit" class="proceed-btn">Update Search</button>
+        </form>
+    </div>
+
+    <main class="results-container">
+        <div class="results-header">
+            <h2>Available Drivers <span id="result-count">(0 found)</span></h2>
+            <p>Showing rides from <strong id="display-from">...</strong> to <strong id="display-to">...</strong></p>
+        </div>
+
+        <div class="results-grid" id="results-grid">
+            </div>
+    </main>
+
+    <footer class="footer" style="margin-top: auto;">
+        <div class="footer-bottom" style="margin-top:0; padding-top:2rem;">
+            <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

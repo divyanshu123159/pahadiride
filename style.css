@@ -1,0 +1,685 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-blue: #2563eb;
+    --primary-blue-hover: #1d4ed8;
+    --text-dark: #0f172a;
+    --text-light: #64748b;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+a { text-decoration: none; }
+
+/* NAVBAR */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--white); box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+.logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-blue); letter-spacing: -0.5px; }
+.logo span { color: var(--text-dark); }
+.nav-links { display: flex; align-items: center; gap: 1rem; }
+.help-link { font-size: 0.875rem; font-weight: 500; color: var(--text-light); transition: color 0.3s; }
+.help-link:hover { color: var(--primary-blue); }
+.sign-in-btn { display: flex; align-items: center; gap: 0.5rem; background-color: var(--text-dark); color: var(--white); padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.875rem; font-weight: 600; border: none; cursor: pointer; }
+
+/* HERO SECTION */
+.hero { position: relative; height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: url('https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=1600') center/cover no-repeat; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7)); }
+.hero-content { position: relative; z-index: 10; text-align: center; padding: 0 1.5rem; width: 100%; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 3.75rem); font-weight: 800; color: var(--white); margin-bottom: 1rem; line-height: 1.2; }
+.highlight { color: #60a5fa; }
+.hero p { font-size: 1.125rem; color: #e2e8f0; max-width: 42rem; margin: 0 auto 2rem auto; }
+
+/* BOOKING BOX */
+.booking-box { background: var(--white); padding: 1.5rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); max-width: 56rem; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: end; }
+@media (min-width: 768px) { .booking-box { grid-template-columns: repeat(4, 1fr); } }
+.input-group { text-align: left; }
+.input-group label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-left: 0.5rem; }
+.input-group select, .input-group input { width: 100%; margin-top: 0.25rem; padding: 0.75rem; background-color: #f1f5f9; border-radius: 0.75rem; border: 2px solid transparent; font-size: 1rem; color: var(--text-dark); outline: none; }
+.input-group select:focus, .input-group input:focus { border-color: var(--primary-blue); }
+.proceed-btn { width: 100%; background-color: var(--primary-blue); color: var(--white); height: 52px; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: background-color 0.3s; }
+.proceed-btn:hover { background-color: var(--primary-blue-hover); }
+
+/* ABOUT SECTION */
+.how-it-works { padding: 5rem 1.5rem; max-width: 72rem; margin: 0 auto; }
+.section-title { text-align: center; margin-bottom: 4rem; }
+.section-title h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem; }
+.underline { height: 4px; width: 5rem; background-color: var(--primary-blue); margin: 0 auto; border-radius: 999px; }
+.features-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 768px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+.feature-card { text-align: center; }
+.icon-box { width: 4rem; height: 4rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; font-size: 1.5rem; }
+.icon-blue { background-color: #dbeafe; color: var(--primary-blue); }
+.icon-green { background-color: #dcfce3; color: #16a34a; }
+.icon-orange { background-color: #ffedd5; color: #ea580c; }
+.feature-card h3 { font-weight: 700; font-size: 1.25rem; margin-bottom: 0.5rem; }
+.feature-card p { color: var(--text-light); line-height: 1.5; }
+
+/* FOOTER */
+.footer { background-color: var(--text-dark); color: var(--white); padding: 3rem 1.5rem; }
+.footer-top { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2rem; border-bottom: 1px solid #1e293b; padding-bottom: 2.5rem; }
+@media (min-width: 768px) { .footer-top { flex-direction: row; justify-content: space-between; } }
+.footer-brand .logo { color: var(--white); margin-bottom: 0.5rem; }
+.footer-brand p { color: #94a3b8; font-size: 0.875rem; max-width: 20rem; }
+.footer-bottom { max-width: 72rem; margin: 2rem auto 0 auto; display: flex; flex-direction: column; text-align: center; gap: 1rem; font-size: 0.75rem; color: #64748b; }
+@media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; text-align: left; } }
+
+/* =========================================
+   SEARCH PAGE & DRIVER CARDS STYLES
+   ========================================= */
+.compact-search { background-color: var(--text-dark); padding: 2rem 1.5rem; }
+.compact-box { box-shadow: none; padding: 1rem; max-width: 64rem; }
+.results-container { max-width: 64rem; margin: 0 auto; padding: 3rem 1.5rem; min-height: 50vh; width: 100%; }
+.results-header { margin-bottom: 2rem; }
+.results-header h2 { font-size: 1.5rem; font-weight: 700; }
+.results-header span { color: var(--text-light); font-weight: 400; font-size: 1.1rem; }
+.results-header p { color: var(--text-light); margin-top: 0.25rem; }
+.results-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+@media (min-width: 768px) { .results-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* DRIVER CARD */
+.driver-card { background: var(--white); border-radius: 1rem; border: 1px solid #e2e8f0; overflow: hidden; transition: box-shadow 0.3s, transform 0.3s; }
+.driver-card:hover { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); transform: translateY(-2px); }
+.card-header { padding: 1.25rem; border-bottom: 1px solid #f1f5f9; }
+.driver-profile { display: flex; align-items: center; gap: 1rem; }
+.driver-avatar { width: 3rem; height: 3rem; background-color: #dbeafe; color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+.driver-avatar.bg-gray { background-color: #f1f5f9; color: #94a3b8; }
+.driver-name { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.badge-verified { font-size: 0.7rem; background-color: #dcfce3; color: #16a34a; padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.2rem; }
+.driver-vehicle { font-size: 0.85rem; color: var(--text-light); margin-top: 0.2rem; }
+.card-body { padding: 1.25rem; background-color: #fafaf9; }
+.route-info { position: relative; padding-left: 0.5rem; }
+.route-point { display: flex; align-items: center; gap: 0.75rem; font-weight: 500; font-size: 0.95rem; }
+.route-line { height: 1.5rem; border-left: 2px dashed #cbd5e1; margin-left: 0.3rem; margin-top: 0.2rem; margin-bottom: 0.2rem; }
+.text-blue { color: var(--primary-blue); }
+.text-green { color: #16a34a; }
+.trip-details { display: flex; gap: 1.5rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: var(--text-light); }
+.card-footer { padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; background: var(--white); }
+.price { font-size: 0.85rem; color: var(--text-light); }
+.price .amount { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); }
+.action-buttons { display: flex; gap: 0.5rem; }
+.btn-whatsapp, .btn-call { padding: 0.6rem 1rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
+.btn-whatsapp { background-color: #25d366; color: white; }
+.btn-call { background-color: var(--text-dark); color: white; }
+.full-width { width: 100%; justify-content: center; }/* =========================================
+   AUTH PAGES (SIGN IN / SIGN UP)
+   ========================================= */
+
+.bg-gray {
+    background-color: #f1f5f9;
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 70px); /* Subtracts navbar height */
+    padding: 2rem 1.5rem;
+}
+
+.auth-card {
+    background: var(--white);
+    width: 100%;
+    max-width: 28rem;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.auth-form .input-group input {
+    background-color: var(--white);
+    border: 1px solid #cbd5e1;
+    margin-top: 0.5rem;
+}
+
+.auth-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-top: -0.5rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+}
+
+.forgot-password {
+    color: var(--primary-blue);
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: var(--primary-blue-hover);
+}
+
+.auth-btn {
+    margin-top: 1rem;
+}
+
+.auth-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.auth-footer a {
+    color: var(--primary-blue);
+    font-weight: 700;
+    margin-left: 0.25rem;
+}/* =========================================
+   DRIVER DASHBOARD STYLES
+   ========================================= */
+
+.dashboard-container {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    min-height: calc(100vh - 70px);
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-profile {
+    margin-bottom: 1.5rem;
+}
+
+/* Status Card & Toggle Switch */
+.status-card {
+    background: var(--white);
+    padding: 1.25rem;
+    border-radius: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+}
+
+.status-info h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 0.2rem;
+}
+
+.status-info p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+/* The Switch CSS */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute; content: "";
+    height: 26px; width: 26px;
+    left: 4px; bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+input:checked + .slider { background-color: #16a34a; }
+input:focus + .slider { box-shadow: 0 0 1px #16a34a; }
+input:checked + .slider:before { transform: translateX(26px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Dashboard Form Card */
+.dashboard-card {
+    background: var(--white);
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.dashboard-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.dashboard-form .input-group input,
+.dashboard-form .input-group select {
+    background-color: var(--white);
+    border: 1px solid #cbd5e1;
+}
+
+.update-btn {
+    margin-top: 0.5rem;
+}
+
+/* Success Toast */
+.success-toast {
+    background-color: #dcfce3;
+    color: #16a34a;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid #bbf7d0;
+}/* =========================================
+   DRIVER CALL TO ACTION (CTA) SECTION
+   ========================================= */
+
+.driver-cta {
+    padding: 2rem 1.5rem 6rem 1.5rem;
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+.cta-container {
+    background: linear-gradient(135deg, var(--text-dark), #1e293b);
+    border-radius: 1.5rem;
+    padding: 3rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 768px) {
+    .cta-container {
+        grid-template-columns: 1.2fr 1fr;
+        padding: 4rem;
+    }
+}
+
+.cta-content {
+    color: var(--white);
+}
+
+.cta-content h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.cta-content p {
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.cta-benefits {
+    list-style: none;
+    margin-bottom: 2.5rem;
+}
+
+.cta-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    color: #f8fafc;
+}
+
+.cta-benefits li i {
+    color: #10b981; /* Green checkmark */
+    font-size: 1.25rem;
+}
+
+.cta-btn {
+    width: auto;
+    padding: 0 2rem;
+    background-color: var(--white);
+    color: var(--text-dark);
+    box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.2);
+}
+
+.cta-btn:hover {
+    background-color: #f1f5f9;
+}
+
+.cta-image-wrapper {
+    border-radius: 1rem;
+    overflow: hidden;
+    height: 100%;
+    min-height: 250px;
+}
+
+.cta-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}/* =========================================
+   SIGN UP PAGE SPECIFIC STYLES
+   ========================================= */
+
+.signup-card {
+    max-width: 36rem; /* Slightly wider than the sign-in card */
+}
+
+.form-section-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--primary-blue);
+    margin-top: 1rem;
+    margin-bottom: -0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.25rem;
+}/* =========================================
+   ACCOUNT CREATION STYLES (TOGGLE)
+   ========================================= */
+
+.account-type-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 0.85rem;
+    background: var(--bg-light);
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.type-btn i {
+    font-size: 1.1rem;
+}
+
+.type-btn:hover {
+    background: #e2e8f0;
+}
+
+.type-btn.active {
+    background: #dbeafe;
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+}
+
+.driver-extra-fields {
+    display: none; /* Hidden via CSS initially */
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #cbd5e1;
+}/* =========================================
+   HELP & FAQ SECTION STYLES
+   ========================================= */
+
+.help-container {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    min-height: calc(100vh - 70px);
+}
+
+.help-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.help-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.help-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.faq-section {
+    margin-bottom: 3rem;
+}
+
+.faq-category {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.faq-category h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.mt-2 {
+    margin-top: 2rem;
+}
+
+/* Accordion Styles */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    background: var(--white);
+    border: 1px solid #cbd5e1;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item[open] {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+}
+
+.faq-item summary {
+    padding: 1.25rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    list-style: none; /* Hides default arrow in some browsers */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Custom Arrow for the dropdown */
+.faq-item summary::after {
+    content: '\f078'; /* FontAwesome down arrow */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--text-light);
+    transition: transform 0.3s ease;
+}
+
+.faq-item[open] summary::after {
+    transform: rotate(180deg);
+    color: var(--primary-blue);
+}
+
+/* Hiding the default webkit marker */
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-answer {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    border-top: 1px dashed #e2e8f0;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+}
+
+/* Contact Support Box */
+.contact-support {
+    background: #e0f2fe; /* Light blue */
+    padding: 2rem;
+    border-radius: 1.5rem;
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.contact-support h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0369a1; /* Dark blue */
+    margin-bottom: 0.5rem;
+}
+
+.contact-support p {
+    color: #0c4a6e;
+    margin-bottom: 1.5rem;
+}
+
+.support-btn {
+    width: auto;
+    padding: 0 2rem;
+    background-color: #25d366; /* WhatsApp Green */
+    box-shadow: 0 10px 15px -3px rgba(37, 211, 102, 0.3);
+}
+
+.support-btn:hover {
+    background-color: #1ebc59;
+}/* =========================================
+   MOBILE OPTIMIZATION (SMARTPHONES)
+   ========================================= */
+
+@media (max-width: 768px) {
+    /* 1. Navbar Adjustments - Prevent squishing */
+    .navbar {
+        padding: 1rem;
+        flex-wrap: wrap; /* Allows the menu to drop below the logo */
+    }
+    .nav-links {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    /* 2. Hero Section - Fit the screen better */
+    .hero {
+        height: auto;
+        min-height: 85vh;
+        padding: 2rem 0;
+    }
+    .hero h1 {
+        font-size: 2.2rem;
+        margin-top: 1rem;
+    }
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* 3. Booking Box - Bigger touch targets for thumbs */
+    .booking-box {
+        padding: 1.25rem;
+        gap: 0.75rem;
+        border-radius: 1rem;
+    }
+    .input-group select, 
+    .input-group input {
+        padding: 0.85rem;
+        font-size: 16px; /* 16px prevents mobile browsers from auto-zooming */
+    }
+    
+    /* 4. Auth & Dashboard Cards - Add breathing room */
+    .auth-card, .dashboard-container, .help-container {
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+    
+    /* 5. Driver Cards - Stack buttons side-by-side perfectly */
+    .card-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    .action-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .btn-whatsapp, .btn-call {
+        justify-content: center;
+        padding: 0.75rem;
+    }
+    
+    /* 6. Driver CTA Banner - Center align on small screens */
+    .cta-container {
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+    .cta-benefits li {
+        justify-content: center;
+    }
+    .cta-btn {
+        width: 100%;
+    }
+}

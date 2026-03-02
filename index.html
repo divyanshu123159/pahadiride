@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PahadiRide | Uttarakhand Local Taxi Directory</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Pahadi<span>Ride</span></div>
+        <div class="nav-links">
+            <a href="help.html" class="help-link">Help</a>
+            <button class="sign-in-btn" onclick="window.location.href='signin.html'">
+    <i class="fa-regular fa-user-circle"></i> Sign In
+</button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Your Local Journey, <br><span class="highlight">Simplified.</span></h1>
+            <p>Directly connect with local drivers across Uttarakhand. No middleman, no extra commission.</p>
+            
+            <form action="search.html" method="GET" class="booking-box">
+                <div class="input-group">
+                    <label>From</label>
+                    <select name="from" required>
+                        <option value="Tehri Garhwal">Tehri Garhwal</option>
+                        <option value="Dehradun">Dehradun</option>
+                        <option value="Rishikesh">Rishikesh</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>To</label>
+                    <select name="to" required>
+                        <option value="Dehradun">Dehradun</option>
+                        <option value="Delhi (NCR)">Delhi (NCR)</option>
+                        <option value="Srinagar">Srinagar</option>
+                        <option value="Haridwar">Haridwar</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <button type="submit" class="proceed-btn">Find Drivers</button>
+            </form>
+        </div>
+    </header>
+
+    <section class="how-it-works">
+        <div class="section-title">
+            <h2>How it works</h2>
+            <div class="underline"></div>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-box icon-blue"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h3>Search Route</h3>
+                <p>Find drivers traveling your way, from local villages to inter-state highways.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box icon-green"><i class="fa-solid fa-id-card"></i></div>
+                <h3>View Details</h3>
+                <p>Check vehicle numbers, driver photos, and basic verification details before you call.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box icon-orange"><i class="fa-solid fa-phone"></i></div>
+                <h3>Call Directly</h3>
+                <p>No booking fee. Just call and fix your seat directly with the driver.</p>
+            </div>
+        </div>
+    </section>
+    <section class="driver-cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2>Are you a Taxi Driver in Uttarakhand?</h2>
+                <p>Join PahadiRide to fill your empty seats faster. Passengers call you directly—no middleman, no hidden commissions.</p>
+                
+                <ul class="cta-benefits">
+                    <li><i class="fa-solid fa-circle-check"></i> 100% Free to list your vehicle</li>
+                    <li><i class="fa-solid fa-circle-check"></i> You set your own route and time</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Keep all the money passengers pay you</li>
+                </ul>
+
+                <button class="proceed-btn cta-btn" onclick="window.location.href='signup.html?type=driver'">
+                    Register Your Vehicle
+                </button>
+            </div>
+            
+            <div class="cta-image-wrapper">
+                <img src="images/bolero.png.jpeg" alt="Driving in the mountains" class="cta-image">
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="logo">PahadiRide</div>
+                <p>Connecting the hills of Uttarakhand with reliable travel information.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
+            <p>Disclaimer: This is a directory only. Verify driver identity and vehicle fitness before boarding.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
