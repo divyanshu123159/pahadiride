@@ -1,3 +1,46 @@
+// --- 1. PWA SERVICE WORKER & INSTALL BUTTON ---
+let deferredPrompt;
+
+// Register the Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registered!'))
+            .catch(err => console.error('Service Worker failed!', err));
+    });
+}
+
+// Listen for the browser's install signal
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome from showing the annoying automatic mini-infobar
+    e.preventDefault();
+    // Save the event so we can trigger it later
+    deferredPrompt = e;
+    
+    // Show our custom install button
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) {
+        installBtn.style.display = 'inline-flex'; // Makes the button visible
+    }
+});
+
+// Make the button actually trigger the install
+document.addEventListener('click', async (e) => {
+    if (e.target.closest('#install-btn')) {
+        const installBtn = document.getElementById('install-btn');
+        installBtn.style.display = 'none'; // Hide button after clicking
+        
+        // Show the native browser install prompt
+        deferredPrompt.prompt();
+        
+        // Wait for the user to click "Install" or "Cancel"
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User chose to: ${outcome}`);
+        
+        // We can't use this prompt again, so clear it
+        deferredPrompt = null;
+    }
+});
 // Register Service Worker for PWA Install
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
