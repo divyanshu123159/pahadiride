@@ -152,37 +152,33 @@ function filterAndDisplayResults(fromLocation, toLocation) {
     });
 
 }
-// 1. Paste your Google Apps Script URL here
+// Paste your Web App URL between the quotes
 const databaseURL = "https://script.google.com/macros/s/AKfycbxax9oM7y3KqpgNSZayNRleQC8FjkGtGZ9GnaP6Uw/dev"; 
 
-// 2. This function listens for the "Register" button click
-document.getElementById('registrationForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevents the page from refreshing
+function handleSignup(event) {
+    event.preventDefault(); // This stops the page from refreshing
 
+    // This matches the IDs exactly from your 14th screenshot
     const formData = {
-        name: document.getElementById('fullName').value,
+        name: document.getElementById('fullname').value, 
         phone: document.getElementById('phone').value,
-        route: document.getElementById('route').value, // Ensure this ID exists in signup.html
-        vehicle: document.getElementById('vehicleNumber').value || "Passenger",
+        // Using a fallback for fields that might be hidden (like Driver fields)
+        route: document.getElementById('route')?.value || "General",
+        vehicle: document.getElementById('vehicleNumber')?.value || "Passenger",
         timestamp: new Date().toISOString()
     };
 
-    // 3. This sends the data to your Google Sheet
     fetch(databaseURL, {
         method: 'POST',
-        mode: 'no-cors', // Helps avoid common browser errors
-        cache: 'no-cache',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        mode: 'no-cors', 
         body: JSON.stringify(formData)
     })
     .then(() => {
-        alert("Success! Your details have been saved.");
-        window.location.href = "signin.html"; // Redirects them after they register
+        alert("Registration Successful!");
+        window.location.href = "signin.html"; 
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert("Something went wrong. Please try again.");
+        console.error('Error!', error);
+        alert("Something went wrong. Please check your internet.");
     });
-});
+}
