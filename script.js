@@ -1,208 +1,162 @@
-// 1. MOCK DATABASE (You will eventually replace this with Google Sheets or a real DB)
-const driverDatabase = [
-    {
-        id: 1,
-        name: "Ramesh Singh",
-        vehicle: "Mahindra Bolero • UK 07 TA 1234",
-        from: "Tehri Garhwal",
-        to: "Dehradun",
-        departure: "08:30 AM",
-        seatsLeft: 3,
-        price: 400,
-        verified: true
-    },
-    {
-        id: 2,
-        name: "Suresh Kumar",
-        vehicle: "Maruti Ertiga • UK 14 XY 5678",
-        from: "Tehri Garhwal",
-        to: "Dehradun",
-        departure: "11:00 AM",
-        seatsLeft: 5,
-        price: 500,
-        verified: false
-    },
-    {
-        id: 3,
-        name: "Amit Negi",
-        vehicle: "Toyota Innova • UK 07 AB 9012",
-        from: "Dehradun",
-        to: "Delhi (NCR)",
-        departure: "09:00 PM",
-        seatsLeft: 2,
-        price: 1200,
-        verified: true
-    }
-];
-
-// 2. MAIN LOGIC ON PAGE LOAD
 document.addEventListener("DOMContentLoaded", function() {
+    // --- 1. GLOBAL NAVBAR LOGIN CHECK ---
+    const loggedInPhone = localStorage.getItem('pahadiRideUser');
+    const navBtn = document.querySelector('.navbar .sign-in-btn'); // Finds the button in the top right
     
-    // Only run the search logic if we are on the search.html page
+    if (navBtn) {
+        if (loggedInPhone) {
+            // User IS logged in: Change button to "Dashboard"
+            navBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> Dashboard';
+            navBtn.onclick = function() {
+                window.location.href = 'dashboard.html';
+            };
+        } else {
+            // User is NOT logged in: Keep it as "Sign In"
+            navBtn.innerHTML = '<i class="fa-regular fa-user-circle"></i> Sign In';
+            navBtn.onclick = function() {
+                window.location.href = 'signin.html';
+            };
+        }
+    }
+
+    // --- 2. AUTO-REDIRECT FROM LOGIN PAGE ---
+    // If they are already logged in but accidentally click a link to signin/signup, bounce them to the dashboard
+    if (loggedInPhone && (window.location.pathname.includes("signin.html") || window.location.pathname.includes("signup.html"))) {
+        window.location.href = "dashboard.html";
+    }
+});
+// --- 1. LIVE DATABASE LOGIC (Search Page) ---
+const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+
+document.addEventListener("DOMContentLoaded", function() {
     if (window.location.pathname.includes("search.html")) {
-        
-        // Extract Data from URL
         const params = new URLSearchParams(window.location.search);
         const searchFrom = params.get('from') || 'Tehri Garhwal';
         const searchTo = params.get('to') || 'Dehradun';
         const searchDate = params.get('date') || '';
 
-        // Update Text & Forms on the page
-        document.getElementById('display-from').textContent = searchFrom;
-        document.getElementById('display-to').textContent = searchTo;
-        
+        if (document.getElementById('display-from')) document.getElementById('display-from').textContent = searchFrom;
+        if (document.getElementById('display-to')) document.getElementById('display-to').textContent = searchTo;
         if (document.getElementById('search-from')) document.getElementById('search-from').value = searchFrom;
         if (document.getElementById('search-to')) document.getElementById('search-to').value = searchTo;
-        if (searchDate && document.getElementById('search-date')) {
-            document.getElementById('search-date').value = searchDate;
-        }
+        if (searchDate && document.getElementById('search-date')) document.getElementById('search-date').value = searchDate;
 
-        // Filter the database
+        // Call the updated async search function
         filterAndDisplayResults(searchFrom, searchTo);
     }
 });
 
-// 3. RENDER THE CARDS
-function filterAndDisplayResults(fromLocation, toLocation) {
+async function filterAndDisplayResults(fromLocation, toLocation) {
     const grid = document.getElementById('results-grid');
     const countDisplay = document.getElementById('result-count');
+    if(!grid) return;
     
-    // Clear grid first
-    grid.innerHTML = '';
+    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">Searching for live rides...</p>';
 
-    // Find matches in our mock database
-    const results = driverDatabase.filter(driver => 
-        driver.from === fromLocation && driver.to === toLocation
-    );
+    try {
+        // Fetch live data from Google Sheets instead of the mock array
+        const response = await fetch(databaseURL + "?action=getDrivers");
+        const liveDrivers = await response.json();
 
-    // Update the count text
-    countDisplay.textContent = `(${results.length} found)`;
+        // Filter based on the route
+        const results = liveDrivers.filter(driver => 
+            driver.from === fromLocation && driver.to === toLocation
+        );
 
-    // If no results
-    if (results.length === 0) {
-        grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 1rem;">
-                <h3 style="color: #64748b; margin-bottom: 0.5rem;">No direct rides found</h3>
-                <p style="color: #94a3b8;">Try changing your date or route.</p>
-            </div>
-        `;
-        return;
+        countDisplay.textContent = `(${results.length} found)`;
+        grid.innerHTML = '';
+
+        if (results.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 1rem;"><h3 style="color: #64748b; margin-bottom: 0.5rem;">No direct rides found</h3><p style="color: #94a3b8;">Try changing your date or route.</p></div>`;
+            return;
+        }
+
+        results.forEach(driver => {
+            const verifiedBadge = driver.verified ? `<span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>` : ``;
+            const avatarColor = driver.verified ? '' : 'bg-gray';
+            grid.innerHTML += `
+                <div class="driver-card">
+                    <div class="card-header"><div class="driver-profile"><div class="driver-avatar ${avatarColor}"><i class="fa-solid fa-user${driver.verified ? '-tie' : ''}"></i></div><div><h3 class="driver-name">${driver.name} ${verifiedBadge}</h3><p class="driver-vehicle">${driver.vehicle}</p></div></div></div>
+                    <div class="card-body"><div class="route-info"><div class="route-point"><i class="fa-solid fa-location-dot text-blue"></i><span>${driver.from}</span></div><div class="route-line"></div><div class="route-point"><i class="fa-solid fa-location-dot text-green"></i><span>${driver.to}</span></div></div><div class="trip-details"><div class="detail-item"><i class="fa-regular fa-clock"></i> Departs: <strong>${driver.departure || 'N/A'}</strong></div><div class="detail-item"><i class="fa-solid fa-chair"></i> Seats Left: <strong>${driver.seats || 'N/A'}</strong></div></div></div>
+                    <div class="card-footer"><div class="price"><span class="amount">₹${driver.price || '0'}</span> / seat</div><div class="action-buttons">
+                        ${driver.verified ? `
+                        <button class="btn-whatsapp" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I found your ride from ${driver.from} to ${driver.to} on PahadiRide. Are seats still available?', '_blank')">
+                            <i class="fa-brands fa-whatsapp"></i> Chat
+                        </button>` : ''}
+                        
+                        <button class="btn-call ${driver.verified ? '' : 'full-width'}" onclick="window.location.href='tel:+91${driver.phone}'">
+                            <i class="fa-solid fa-phone"></i> Call
+                        </button>
+                    </div>
+                </div>`;
+        });
+    } catch (err) {
+        console.error("Search failed:", err);
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Unable to connect to live database.</p>';
     }
+}
 
-    // Generate HTML for each matching driver
-    results.forEach(driver => {
-        
-        const verifiedBadge = driver.verified 
-            ? `<span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>` 
-            : ``;
+// --- 2. ACCOUNT TYPE TOGGLE LOGIC ---
+window.setAccountType = function(type) {
+    const btnPassenger = document.getElementById('btn-passenger');
+    const btnDriver = document.getElementById('btn-driver');
+    const driverFields = document.getElementById('driver-fields');
+    const vehicleInput = document.getElementById('signup-vehicle');
+    const rcInput = document.getElementById('signup-rc');
+
+    if (type === 'driver') {
+        btnDriver.classList.add('active');
+        btnPassenger.classList.remove('active');
+        driverFields.style.display = 'flex';
+        if(vehicleInput) vehicleInput.required = true;
+        if(rcInput) rcInput.required = true;
+    } else {
+        btnPassenger.classList.add('active');
+        btnDriver.classList.remove('active');
+        driverFields.style.display = 'none';
+        if(vehicleInput) vehicleInput.required = false;
+        if(rcInput) rcInput.required = false;
+    }
+}
+
+// --- 3. REGISTRATION LOGIC ---
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('type') === 'driver') setAccountType('driver');
+
+    const regForm = document.getElementById('signup-form');
+    if (regForm) {
+        regForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const submitBtn = regForm.querySelector('.proceed-btn');
             
-        const avatarColor = driver.verified ? '' : 'bg-gray';
+            const formData = {
+                action: "signup",
+                name: document.getElementById('signup-name').value,
+                phone: document.getElementById('signup-phone').value,
+                vehicle: document.getElementById('signup-vehicle')?.value || "Passenger",
+                rc_number: document.getElementById('signup-rc')?.value || "N/A",
+                timestamp: new Date().toLocaleString()
+            };
 
-        const cardHTML = `
-            <div class="driver-card">
-                <div class="card-header">
-                    <div class="driver-profile">
-                        <div class="driver-avatar ${avatarColor}">
-                            <i class="fa-solid fa-user${driver.verified ? '-tie' : ''}"></i>
-                        </div>
-                        <div>
-                            <h3 class="driver-name">${driver.name} ${verifiedBadge}</h3>
-                            <p class="driver-vehicle">${driver.vehicle}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card-body">
-                    <div class="route-info">
-                        <div class="route-point">
-                            <i class="fa-solid fa-location-dot text-blue"></i>
-                            <span>${driver.from}</span>
-                        </div>
-                        <div class="route-line"></div>
-                        <div class="route-point">
-                            <i class="fa-solid fa-location-dot text-green"></i>
-                            <span>${driver.to}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="trip-details">
-                        <div class="detail-item">
-                            <i class="fa-regular fa-clock"></i> Departs: <strong>${driver.departure}</strong>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fa-solid fa-chair"></i> Seats Left: <strong>${driver.seatsLeft}</strong>
-                        </div>
-                    </div>
-                </div>
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            submitBtn.style.opacity = '0.7';
 
-                <div class="card-footer">
-                    <div class="price">
-                        <span class="amount">₹${driver.price}</span> / seat
-                    </div>
-                    <div class="action-buttons">
-                        ${driver.verified ? `<button class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Chat</button>` : ''}
-                        <button class="btn-call ${driver.verified ? '' : 'full-width'}"><i class="fa-solid fa-phone"></i> Call</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Add the new card HTML to the grid
-        grid.innerHTML += cardHTML;
-    });
-
-}
-// Paste your Web App URL between the quotes
-const databaseURL = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec"; 
-
-function handleSignup(event) {
-    event.preventDefault(); 
-
-    // Getting the success toast from your HTML
-    const successToast = document.getElementById('signup-success');
-
-    const formData = {
-        name: document.getElementById('fullname').value, 
-        phone: document.getElementById('phone').value,
-        // These now match your HTML IDs exactly
-        vehicle: document.getElementById('signup-vehicle')?.value || "Passenger",
-        rc_number: document.getElementById('signup-rc')?.value || "N/A",
-        timestamp: new Date().toLocaleString()
-    };
-
-    if (successToast) successToast.style.display = 'flex';
-
-    fetch(databaseURL, {
-        method: 'POST',
-        mode: 'no-cors', 
-        body: JSON.stringify(formData)
-    })
-    .then(() => {
-        setTimeout(() => {
-            window.location.href = "signin.html"; 
-        }, 2000);
-    })
-    .catch(error => {
-        console.error('Error!', error);
-        alert("Submission failed. Check your internet.");
-    });
-}
-document.getElementById('updateRouteForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const updateData = {
-        action: "update", // This tells the Google Script to find and replace
-        phone: document.getElementById('login-phone').value,
-        route: document.getElementById('update-route').value,
-        price: document.getElementById('update-price').value,
-        timestamp: new Date().toLocaleString()
-    };
-
-    fetch(databaseURL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify(updateData)
-    })
-    .then(() => alert("Ride details updated successfully!"))
-    .catch(err => console.error("Update failed:", err));
+            fetch(databaseURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                const successToast = document.getElementById('signup-success');
+                if (successToast) successToast.style.display = 'flex';
+                setTimeout(() => { window.location.href = "signin.html"; }, 2000);
+            })
+            .catch(err => {
+                alert("Connection Error. Check your internet.");
+                submitBtn.innerHTML = 'Create Account';
+                submitBtn.style.opacity = '1';
+            });
+        });
+    }
 });
