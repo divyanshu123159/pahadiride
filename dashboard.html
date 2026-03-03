@@ -89,10 +89,36 @@
                             <option value="Both">Both</option>
                         </select>
                     </div>
-                    <div class="form-row">
-                        <div class="input-group"><label>From</label><input type="text" id="v-from"></div>
-                        <div class="input-group"><label>To</label><input type="text" id="v-to"></div>
-                    </div>
+                      <div class="form-row">
+    <div class="input-group">
+        <label>From</label>
+        <select id="v-from" required>
+            <option value="Tehri Garhwal">Tehri Garhwal</option>
+            <option value="Dehradun">Dehradun</option>
+            <option value="Rishikesh">Rishikesh</option>
+            <option value="Srinagar">Srinagar</option>
+            <option value="Devprayag">Devprayag</option>
+            <option value="Chamba">Chamba</option>
+            <option value="Uttarkashi">Uttarkashi</option>
+            <option value="Delhi (NCR)">Delhi (NCR)</option>
+            <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label>To</label>
+        <select id="v-to" required>
+            <option value="Tehri Garhwal">Tehri Garhwal</option>
+            <option value="Dehradun">Dehradun</option>
+            <option value="Rishikesh">Rishikesh</option>
+            <option value="Srinagar">Srinagar</option>
+            <option value="Devprayag">Devprayag</option>
+            <option value="Chamba">Chamba</option>
+            <option value="Uttarkashi">Uttarkashi</option>
+            <option value="Delhi (NCR)">Delhi (NCR)</option>
+            <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+        </select>
+    </div>
+</div>
                     <div class="form-row">
                         <div class="input-group"><label>Price (₹)</label><input type="number" id="v-price"></div>
                         <div class="input-group"><label>Seats</label><input type="number" id="v-seats"></div>
@@ -246,4 +272,5 @@ async function removeCar(rc) {
 }
     </script>
 </body>
+
 </html>
