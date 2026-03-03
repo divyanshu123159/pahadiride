@@ -1,13 +1,3 @@
-
-// Register Service Worker for PWA Install
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker registered!', reg))
-            .catch(err => console.error('Service Worker failed!', err));
-    });
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     // --- 1. GLOBAL NAVBAR LOGIN CHECK ---
     const loggedInPhone = localStorage.getItem('pahadiRideUser');
@@ -108,6 +98,7 @@ async function filterAndDisplayResults(fromLocation, toLocation) {
                         ` : ''}
 
                     </div>
+                </div>`;
         });
     } catch (err) {
         console.error("Search failed:", err);
@@ -179,35 +170,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-// --- SMART INSTALL INSTRUCTION BANNER ---
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. Check if the app is already installed
-    const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    
-    // 2. If it is NOT installed, show the educational banner
-    if (!isInstalled) {
-        // Detect if they are on an iPhone/iPad
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        
-        // Create the banner UI
-        const banner = document.createElement('div');
-        banner.style.cssText = "position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: white; padding: 1rem; text-align: center; z-index: 9999; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1); font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between; gap: 10px;";
-        
-        let instructionText = "";
-        if (isIOS) {
-            instructionText = `Install PahadiRide: Tap the <strong>Share</strong> icon below, then <strong>"Add to Home Screen"</strong>`;
-        } else {
-            instructionText = `Install PahadiRide: Tap the <strong>3 dots</strong> <i class="fa-solid fa-ellipsis-vertical"></i> top right, then <strong>"Add to Home screen"</strong>`;
-        }
-        
-        banner.innerHTML = `
-            <div style="text-align: left; line-height: 1.4;">${instructionText}</div>
-            <button onclick="this.parentElement.style.display='none'" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap;">Got it</button>
-        `;
-        
-        // Add the banner to the page
-        document.body.appendChild(banner);
-    }
-});
-
-
