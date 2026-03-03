@@ -683,3 +683,9 @@ input:checked + .slider:before { transform: translateX(26px); }
         width: 100%;
     }
 }
+#fc-rc:invalid {
+    border: 2px solid #ef4444;
+}
+#fc-rc:valid {
+    border: 2px solid #22c55e;
+}

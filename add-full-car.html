@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Booking Setup - PahadiRide</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray">
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="dashboard.html" class="logo" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+            <span style="font-weight: bold; color: white;">Setup Private Trip</span>
+        </div>
+    </nav>
+
+    <main class="dashboard-container" style="margin-top: 20px;">
+        <div class="dashboard-card">
+            <div class="card-header" style="background: #0f172a; color: white; border-radius: 12px 12px 0 0; padding: 15px;">
+                <h3 style="margin:0;"><i class="fa-solid fa-shield-car"></i> List for Full Vehicle</h3>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    <p style="font-size: 0.8rem; color: #64748b; margin: 0;">Listing as Driver:</p>
+                    <strong id="fc-driver-name" style="font-size: 1.1rem; color: #1e293b;">Fetching name...</strong>
+                </div>
+
+                <form id="full-car-form" onsubmit="saveFullCar(event)">
+                    <div class="input-group">
+                        <label>Vehicle Model (e.g. Scorpio, Dzire)</label>
+                        <input type="text" id="fc-vehicle-name" placeholder="Enter car model" required>
+                    </div>
+                    
+                    <div class="input-group">
+    <label>RC Number (e.g. UK09TA1518)</label>
+    <input type="text" id="fc-rc" 
+           placeholder="UK09TA1518" 
+           style="text-transform: uppercase;" 
+           maxlength="10" 
+           required>
+</div>
+                    <div class="input-group" style="background: #f1f5f9; padding: 10px; border-radius: 8px;">
+                        <label style="color: #0369a1;"><i class="fa-solid fa-map-location-dot"></i> Service Route</label>
+                        <input type="text" value="Anywhere to Anywhere (Uttarakhand)" disabled style="background: #e2e8f0; border: none; font-weight: bold; color: #1e293b; width: 100%; padding: 8px; border-radius: 4px;">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Price (₹) - Enter 0 for Negotiable</label>
+                        <input type="number" id="fc-price" value="0">
+                    </div>
+
+                    <button type="submit" class="proceed-btn" id="fc-save-btn" style="background: #10b981; margin-top: 10px; width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
+                        <i class="fa-solid fa-check-double"></i> Make Available for Private Trips
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+        const phone = localStorage.getItem('pahadiRideUser');
+        const pass = localStorage.getItem('pahadiRidePass');
+
+        // 1. Fetch the driver's name on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!phone || !pass) {
+                window.location.href = "signin.html";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${databaseURL}?phone=${phone}&password=${pass}`);
+                const data = await res.json();
+                if (data.found) {
+                    document.getElementById('fc-driver-name').innerText = data.name;
+                } else {
+                    document.getElementById('fc-driver-name').innerText = "Unknown Driver";
+                }
+            } catch (err) {
+                document.getElementById('fc-driver-name').innerText = "Error loading name";
+            }
+        });
+
+        // 2. Save function using the fetched name
+        async function saveFullCar(event) {
+            event.preventDefault();
+            const btn = document.getElementById('fc-save-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            const tripData = {
+                action: "updateTrip",
+                phone: phone,
+                password: pass,
+                name: document.getElementById('fc-driver-name').innerText, // Uses fetched name
+                vehicle: document.getElementById('fc-vehicle-name').value,
+                rc_number: document.getElementById('fc-rc').value,
+                from: "Anywhere",   
+                to: "Anywhere",     
+                time: "Flexible",
+                seats: "Full Car",
+                price: document.getElementById('fc-price').value || "0",
+                trip_type: "Full Vehicle" 
+            };
+
+            try {
+                await fetch(databaseURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(tripData) });
+                alert("Success! Your car is now available for private bookings from anywhere in Uttarakhand.");
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                alert("Connection error. Check your internet.");
+                btn.disabled = false;
+                btn.innerHTML = "Make Available for Private Trips";
+            }
+        }
+    </script>
+</body>
+</html>

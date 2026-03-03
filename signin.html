@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#2563eb">
 </head>
 <body class="bg-gray">
 
@@ -25,7 +25,7 @@
                 <p>Sign in to manage your rides or listings.</p>
             </div>
 
-           <form id="login-form" class="auth-form">
+            <form id="signin-form" class="auth-form">
                 <div class="input-group">
                     <label>Registered Phone Number</label>
                     <input type="tel" id="login-phone" pattern="[0-9]{10}" placeholder="Enter your 10-digit number" required>
@@ -34,6 +34,10 @@
                 <div class="input-group">
                     <label>Password</label>
                     <input type="password" id="login-password" placeholder="••••••••" required>
+                     <p id="login-error" style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: 500;">
+                        <i class="fa-solid fa-circle-exclamation"></i> Incorrect phone number or password.
+                    </p>
+                   
                 </div>
 
                 <div class="auth-options">
@@ -52,28 +56,8 @@
         </div>
     </main>
 
-   <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            
-            // 1. Grab the phone number they just typed
-            const userPhone = document.getElementById('login-phone').value;
-            
-            // 2. Save it to the Browser's Memory (The ID Badge)
-            localStorage.setItem('pahadiRideUser', userPhone);
-            
-            const loginBtn = document.getElementById('login-btn');
-            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-            
-            // 3. Send them to the dashboard
-            setTimeout(() => {
-                window.location.href = "dashboard.html"; 
-            }, 800);
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
 
         
-</body>
-</html>

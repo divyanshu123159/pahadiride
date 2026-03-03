@@ -29,23 +29,35 @@
             <p>Directly connect with local drivers across Uttarakhand. No middleman, no extra commission.</p>
             
             <form action="search.html" method="GET" class="booking-box">
-                <div class="input-group">
-                    <label>From</label>
-                    <select name="from" required>
-                        <option value="Tehri Garhwal">Tehri Garhwal</option>
-                        <option value="Dehradun">Dehradun</option>
-                        <option value="Rishikesh">Rishikesh</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>To</label>
-                    <select name="to" required>
-                        <option value="Dehradun">Dehradun</option>
-                        <option value="Delhi (NCR)">Delhi (NCR)</option>
-                        <option value="Srinagar">Srinagar</option>
-                        <option value="Haridwar">Haridwar</option>
-                    </select>
-                </div>
+               <div class="input-group">
+    <label>From</label>
+    <select id="search-from">
+        <option value="Tehri Garhwal">Tehri Garhwal</option>
+        <option value="Dehradun">Dehradun</option>
+        <option value="Rishikesh">Rishikesh</option>
+        <option value="Srinagar">Srinagar</option>
+        <option value="Devprayag">Devprayag</option>
+        <option value="Chamba">Chamba</option>
+        <option value="Uttarkashi">Uttarkashi</option>
+        <option value="Delhi (NCR)">Delhi (NCR)</option>
+        <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+    </select>
+</div>
+
+<div class="input-group">
+    <label>To</label>
+    <select id="search-to">
+        <option value="Tehri Garhwal">Tehri Garhwal</option>
+        <option value="Dehradun" selected>Dehradun</option>
+        <option value="Rishikesh">Rishikesh</option>
+        <option value="Srinagar">Srinagar</option>
+        <option value="Devprayag">Devprayag</option>
+        <option value="Chamba">Chamba</option>
+        <option value="Uttarkashi">Uttarkashi</option>
+        <option value="Delhi (NCR)">Delhi (NCR)</option>
+        <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+    </select>
+</div>
                 <div class="input-group">
                     <label>Date</label>
                     <input type="date" name="date" required>
@@ -76,6 +88,25 @@
                 <h3>Call Directly</h3>
                 <p>No booking fee. Just call and fix your seat directly with the driver.</p>
             </div>
+        </div>
+    </section>
+    <section style="margin: 3rem auto; max-width: 800px; padding: 0 1rem;">
+        <div style="background: linear-gradient(135deg, #0ea5e9, #2563eb); border-radius: 1rem; padding: 2rem; color: white; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+            
+            <div style="background: rgba(255, 255, 255, 0.2); width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 50%; margin-bottom: 1rem;">
+                <i class="fa-solid fa-car-side" style="font-size: 1.8rem;"></i>
+            </div>
+            
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Need a ride just for yourself?</h2>
+            
+            <p style="margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.9; max-width: 500px; line-height: 1.5;">
+                Skip the shared seats. Book an entire vehicle for your family, friends, or personal trips across Uttarakhand at the best local rates.
+            </p>
+            
+            <button onclick="window.location.href='full-car.html'" style="background: white; color: #2563eb; border: none; padding: 0.85rem 2rem; border-radius: 0.5rem; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <i class="fa-solid fa-key"></i> Book a Full Car
+            </button>
+            
         </div>
     </section>
     <section class="driver-cta">

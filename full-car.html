@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserve Whole Car | PahadiRide</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+</head>
+<body class="bg-gray">
+
+    <nav class="navbar">
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a></div>
+        <div class="nav-links">
+            <button class="sign-in-btn" style="background-color: transparent; color: var(--text-dark); border: 1px solid #cbd5e1;">
+                <i class="fa-regular fa-user-circle"></i> Sign In
+            </button>
+        </div>
+    </nav>
+
+    <header style="background: linear-gradient(135deg, #0ea5e9, #2563eb); padding: 3rem 1rem 4rem 1rem; color: white; text-align: center;">
+        <h2 style="font-size: 2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-car-side"></i> Reserve an Entire Vehicle</h2>
+        <p style="opacity: 0.9;">Negotiate directly with local drivers for your private trip.</p>
+    </header>
+
+    <main class="dashboard-container" style="max-width: 1000px; margin-top: -3rem;">
+        
+        <div style="background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">From</label>
+                    <select id="search-from" style="width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: #f8fafc; margin-top: 0.4rem;">
+                     <option value="Tehri Garhwal">Tehri Garhwal</option>
+    <option value="Dehradun">Dehradun</option>
+    <option value="Rishikesh">Rishikesh</option>
+    <option value="Srinagar">Srinagar</option>
+    <option value="Devprayag">Devprayag</option>
+    <option value="Chamba">Chamba</option>
+    <option value="Uttarkashi">Uttarkashi</option>
+    <option value="Delhi (NCR)">Delhi (NCR)</option>
+    <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+                    </select>
+                </div>
+
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">To</label>
+                    <select id="search-to" style="width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: #f8fafc; margin-top: 0.4rem;">
+                        <option value="Tehri Garhwal">Tehri Garhwal</option>
+    <option value="Dehradun">Dehradun</option>
+    <option value="Rishikesh">Rishikesh</option>
+    <option value="Srinagar">Srinagar</option>
+    <option value="Devprayag">Devprayag</option>
+    <option value="Chamba">Chamba</option>
+    <option value="Uttarkashi">Uttarkashi</option>
+    <option value="Delhi (NCR)">Delhi (NCR)</option>
+    <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+                    </select>
+                </div>
+
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date</label>
+                    <input type="date" id="search-date" style="width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: #f8fafc; margin-top: 0.4rem;">
+                </div>
+
+                <button type="button" class="proceed-btn" onclick="updateSearch()" style="padding: 0.85rem 1.5rem; white-space: nowrap;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search Cars
+                </button>
+
+            </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.5rem; color: #1e293b;">Available Vehicles <span id="result-count" style="color: #64748b; font-size: 1.1rem; font-weight: 400;">(0 found)</span></h2>
+            <p style="color: #64748b; margin-top: 0.2rem;">Showing full cars available from <strong id="display-from" style="color: #0ea5e9;">Tehri Garhwal</strong> to <strong id="display-to" style="color: #10b981;">Dehradun</strong></p>
+        </div>
+
+        <div id="results-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+            </div>
+
+    </main>
+
+    <script>
+        function updateSearch() {
+            const from = document.getElementById('search-from').value;
+            const to = document.getElementById('search-to').value;
+            const date = document.getElementById('search-date').value;
+            
+            // Reload the page with the new parameters in the URL so script.js can catch them
+            window.location.href = "full-car.html?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to) + "&date=" + encodeURIComponent(date);
+        }
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
