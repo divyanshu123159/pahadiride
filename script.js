@@ -88,17 +88,26 @@ async function filterAndDisplayResults(fromLocation, toLocation) {
                 <div class="driver-card">
                     <div class="card-header"><div class="driver-profile"><div class="driver-avatar ${avatarColor}"><i class="fa-solid fa-user${driver.verified ? '-tie' : ''}"></i></div><div><h3 class="driver-name">${driver.name} ${verifiedBadge}</h3><p class="driver-vehicle">${driver.vehicle}</p></div></div></div>
                     <div class="card-body"><div class="route-info"><div class="route-point"><i class="fa-solid fa-location-dot text-blue"></i><span>${driver.from}</span></div><div class="route-line"></div><div class="route-point"><i class="fa-solid fa-location-dot text-green"></i><span>${driver.to}</span></div></div><div class="trip-details"><div class="detail-item"><i class="fa-regular fa-clock"></i> Departs: <strong>${driver.departure || 'N/A'}</strong></div><div class="detail-item"><i class="fa-solid fa-chair"></i> Seats Left: <strong>${driver.seats || 'N/A'}</strong></div></div></div>
-                    <div class="card-footer"><div class="price"><span class="amount">₹${driver.price || '0'}</span> / seat</div><div class="action-buttons">
-                        ${driver.verified ? `
-                        <button class="btn-whatsapp" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I found your ride from ${driver.from} to ${driver.to} on PahadiRide. Are seats still available?', '_blank')">
-                            <i class="fa-brands fa-whatsapp"></i> Chat
-                        </button>` : ''}
+                    <div class="card-footer"><div class="price"><span class="amount">₹${driver.price || '0'}</span> / seat</div><div class="action-buttons" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
                         
-                        <button class="btn-call ${driver.verified ? '' : 'full-width'}" onclick="window.location.href='tel:+91${driver.phone}'">
-                            <i class="fa-solid fa-phone"></i> Call
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${driver.verified ? `
+                            <button class="btn-whatsapp" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I found your ride from ${driver.from} to ${driver.to} on PahadiRide. Are seats still available?', '_blank')">
+                                <i class="fa-brands fa-whatsapp"></i> Chat
+                            </button>` : ''}
+                            
+                            <button class="btn-call ${driver.verified ? '' : 'full-width'}" onclick="window.location.href='tel:+91${driver.phone}'">
+                                <i class="fa-solid fa-phone"></i> Call
+                            </button>
+                        </div>
+
+                        ${driver.verified ? `
+                        <button class="btn-whatsapp" style="background-color: #0ea5e9; width: 100%; border: none; padding: 0.75rem; border-radius: 0.5rem; color: white; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem;" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I want to book your ENTIRE vehicle from ${driver.from} to ${driver.to} on PahadiRide. What is your price for the full booking?', '_blank')">
+                            <i class="fa-solid fa-car"></i> Book Whole Car
                         </button>
+                        ` : ''}
+
                     </div>
-                </div>`;
         });
     } catch (err) {
         console.error("Search failed:", err);
@@ -200,4 +209,5 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.appendChild(banner);
     }
 });
+
 
