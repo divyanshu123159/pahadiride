@@ -316,3 +316,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if(toggleBtns) toggleBtns.style.display = 'none';
     }
 });
+
