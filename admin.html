@@ -7,33 +7,43 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .admin-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); margin-top:20px; }
         .stat-card   { background:white; border-radius:12px; padding:20px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
         .stat-num    { font-size:2.5rem; font-weight:800; }
         .stat-label  { font-size:0.85rem; color:#64748b; margin-top:4px; }
-        .driver-row  { background:white; border-radius:10px; padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06); flex-wrap:wrap; }
-        .driver-row-info { flex:1; min-width:180px; }
-        .driver-row-actions { display:flex; gap:8px; flex-wrap:wrap; }
-        .btn-verify   { padding:6px 12px; background:#dbeafe; color:#2563eb; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; }
-        .btn-unverify { padding:6px 12px; background:#fef9c3; color:#ca8a04; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; }
-        .btn-delete   { padding:6px 12px; background:#fee2e2; color:#ef4444; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; }
-        .badge-v  { background:#dcfce7; color:#16a34a; font-size:0.7rem; padding:2px 7px; border-radius:999px; font-weight:600; }
-        .badge-uv { background:#f1f5f9; color:#64748b;  font-size:0.7rem; padding:2px 7px; border-radius:999px; font-weight:600; }
+        .driver-row  { background:white; border-radius:10px; padding:14px 16px; margin-bottom:10px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06); flex-wrap:wrap; }
+        .driver-row.pending-row { border-left:4px solid #f59e0b; background:#fffbeb; }
+        .driver-row-info    { flex:1; min-width:180px; }
+        .driver-row-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+        .btn-verify   { padding:7px 14px; background:#dbeafe; color:#2563eb; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; }
+        .btn-unverify { padding:7px 14px; background:#fef9c3; color:#ca8a04; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; }
+        .btn-delete   { padding:7px 14px; background:#fee2e2; color:#ef4444; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; }
+        .btn-wa       { padding:7px 14px; background:#dcfce7; color:#16a34a; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+        .badge-v      { background:#dcfce7; color:#16a34a; font-size:0.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
+        .badge-p      { background:#fef3c7; color:#92400e; font-size:0.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
+        .badge-uv     { background:#f1f5f9; color:#64748b;  font-size:0.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
         #login-screen { max-width:360px; margin:80px auto; background:white; border-radius:16px; padding:2rem; box-shadow:0 4px 24px rgba(0,0,0,0.1); }
-        .search-bar { width:100%; padding:10px 14px; border:2px solid #e2e8f0; border-radius:8px; font-size:0.95rem; margin-bottom:16px; outline:none; }
+        .search-bar   { width:100%; padding:10px 14px; border:2px solid #e2e8f0; border-radius:8px; font-size:0.95rem; margin-bottom:16px; outline:none; }
         .search-bar:focus { border-color:#2563eb; }
+        .section-title { font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px; margin:0 0 12px 0; }
+        .pending-section { background:#fffbeb; border:1.5px solid #f59e0b; border-radius:12px; padding:16px; margin-bottom:24px; }
+        .empty-state { text-align:center; padding:2rem; color:#94a3b8; font-size:0.9rem; }
     </style>
 </head>
 <body class="bg-gray">
 
     <nav class="navbar">
-        <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a> <span style="font-size:0.75rem;background:#ef4444;color:white;padding:2px 8px;border-radius:4px;margin-left:6px;">ADMIN</span></div>
+        <div class="logo">
+            <a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a>
+            <span style="font-size:0.75rem;background:#ef4444;color:white;padding:2px 8px;border-radius:4px;margin-left:8px;">ADMIN</span>
+        </div>
         <div class="nav-links">
-            <button class="sign-in-btn" onclick="adminLogout()" id="logout-btn" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            <button class="sign-in-btn" onclick="adminLogout()" id="logout-btn" style="display:none;">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
         </div>
     </nav>
 
-    <!-- LOGIN SCREEN -->
+    <!-- LOGIN -->
     <div id="login-screen">
         <div style="text-align:center;margin-bottom:1.5rem;">
             <i class="fa-solid fa-shield-halved" style="font-size:2.5rem;color:#2563eb;"></i>
@@ -42,46 +52,59 @@
         </div>
         <div class="input-group">
             <label>Admin Password</label>
-            <input type="password" id="admin-pass-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkAdminLogin()">
+            <input type="password" id="admin-pass-input" placeholder="••••••••"
+                   onkeydown="if(event.key==='Enter') checkAdminLogin()">
         </div>
-        <p id="admin-error" style="color:#ef4444;font-size:0.85rem;display:none;margin-top:8px;"><i class="fa-solid fa-circle-exclamation"></i> Incorrect password.</p>
+        <p id="admin-error" style="color:#ef4444;font-size:0.85rem;display:none;margin-top:8px;">
+            <i class="fa-solid fa-circle-exclamation"></i> Incorrect password.
+        </p>
         <button onclick="checkAdminLogin()" class="proceed-btn" style="width:100%;margin-top:12px;">
             <i class="fa-solid fa-unlock"></i> Login
         </button>
     </div>
 
-    <!-- ADMIN PANEL (hidden until login) -->
+    <!-- ADMIN PANEL -->
     <main id="admin-panel" style="display:none;" class="dashboard-container">
 
-        <!-- Stats Row -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:20px;" id="stats-row">
-            <div class="stat-card"><div class="stat-num" id="stat-total" style="color:#2563eb;">-</div><div class="stat-label">Total Drivers</div></div>
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px;">
+            <div class="stat-card"><div class="stat-num" id="stat-total"   style="color:#2563eb;">-</div><div class="stat-label">Total Drivers</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-pending" style="color:#f59e0b;">-</div><div class="stat-label">Pending Review</div></div>
             <div class="stat-card"><div class="stat-num" id="stat-verified" style="color:#10b981;">-</div><div class="stat-label">Verified</div></div>
-            <div class="stat-card"><div class="stat-num" id="stat-online" style="color:#f59e0b;">-</div><div class="stat-label">Online Now</div></div>
-            <div class="stat-card"><div class="stat-num" id="stat-vehicles" style="color:#8b5cf6;">-</div><div class="stat-label">Total Listings</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-online"  style="color:#8b5cf6;">-</div><div class="stat-label">Online Now</div></div>
         </div>
 
-        <!-- Search -->
-        <input type="text" class="search-bar" id="driver-search" placeholder="🔍  Search by name, phone, or vehicle..." oninput="renderDrivers()">
+        <!-- ✅ PENDING DRIVERS (top priority section) -->
+        <div class="pending-section" id="pending-section" style="display:none;">
+            <div class="section-title" style="color:#92400e;">
+                <i class="fa-solid fa-clock" style="color:#f59e0b;"></i>
+                Pending Verification
+                <span id="pending-count" style="background:#f59e0b;color:white;font-size:0.7rem;padding:2px 8px;border-radius:999px;"></span>
+            </div>
+            <p style="font-size:0.82rem;color:#78350f;margin:0 0 12px 0;">These drivers have registered but are waiting for RC verification. Review and verify to make them live.</p>
+            <div id="pending-list"></div>
+        </div>
 
+        <!-- All Drivers -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <h3 style="margin:0;font-size:1.1rem;"><i class="fa-solid fa-users" style="color:#2563eb;"></i> All Registered Drivers</h3>
-            <button onclick="loadAllDrivers()" style="background:#f1f5f9;border:1px solid #e2e8f0;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.85rem;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            <h3 style="margin:0;font-size:1.1rem;"><i class="fa-solid fa-users" style="color:#2563eb;"></i> All Drivers</h3>
+            <button onclick="loadAllDrivers()" style="background:#f1f5f9;border:1px solid #e2e8f0;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.85rem;">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
         </div>
-
-        <div id="drivers-list"><p style="text-align:center;padding:2rem;color:#94a3b8;">Loading drivers...</p></div>
+        <input type="text" class="search-bar" id="driver-search" placeholder="🔍  Search by name, phone, or vehicle..." oninput="renderAllDrivers()">
+        <div id="drivers-list"></div>
 
     </main>
 
     <script>
-        // ⚠️ CHANGE THIS PASSWORD before deploying!
+        // ⚠️ Change this password before deploying!
         const ADMIN_PASSWORD = "pahadi@admin2026";
-        const databaseURL    = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+        const databaseURL    = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
         let allDrivers = [];
 
         function checkAdminLogin() {
-            const input = document.getElementById('admin-pass-input').value;
-            if (input === ADMIN_PASSWORD) {
+            if (document.getElementById('admin-pass-input').value === ADMIN_PASSWORD) {
                 sessionStorage.setItem('pahadiAdmin', '1');
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-panel').style.display  = 'block';
@@ -92,12 +115,8 @@
             }
         }
 
-        function adminLogout() {
-            sessionStorage.removeItem('pahadiAdmin');
-            location.reload();
-        }
+        function adminLogout() { sessionStorage.removeItem('pahadiAdmin'); location.reload(); }
 
-        // Auto-login if already authenticated this session
         if (sessionStorage.getItem('pahadiAdmin') === '1') {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('admin-panel').style.display  = 'block';
@@ -106,67 +125,128 @@
         }
 
         async function loadAllDrivers() {
-            document.getElementById('drivers-list').innerHTML = '<p style="text-align:center;padding:2rem;color:#94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
+            document.getElementById('drivers-list').innerHTML  = '<p class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
+            document.getElementById('pending-list').innerHTML  = '<p class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
             try {
                 const res  = await fetch(databaseURL + "?action=getDrivers&showAll=true");
                 allDrivers = await res.json();
                 updateStats();
-                renderDrivers();
+                renderPendingDrivers();
+                renderAllDrivers();
             } catch (err) {
                 document.getElementById('drivers-list').innerHTML = '<p style="text-align:center;color:red;padding:2rem;">Failed to load. Check database connection.</p>';
             }
         }
 
         function updateStats() {
-            document.getElementById('stat-total').textContent    = allDrivers.length;
-            document.getElementById('stat-verified').textContent = allDrivers.filter(d => d.verified).length;
-            document.getElementById('stat-online').textContent   = allDrivers.filter(d => d.status !== 'offline').length;
-            const total = allDrivers.reduce((sum, d) => sum + (Array.isArray(d.fleet) ? d.fleet.length : 1), 0);
-            document.getElementById('stat-vehicles').textContent = total;
+            const pending  = allDrivers.filter(d => !d.verified || d.verified === false || d.verified === "PENDING");
+            const verified = allDrivers.filter(d => d.verified === true);
+            const online   = allDrivers.filter(d => d.status !== 'offline');
+            // Deduplicate by phone for total count
+            const unique   = [...new Set(allDrivers.map(d => d.phone))];
+            document.getElementById('stat-total').textContent    = unique.length;
+            document.getElementById('stat-pending').textContent  = [...new Set(pending.map(d=>d.phone))].length;
+            document.getElementById('stat-verified').textContent = [...new Set(verified.map(d=>d.phone))].length;
+            document.getElementById('stat-online').textContent   = [...new Set(online.map(d=>d.phone))].length;
         }
 
-        function renderDrivers() {
-            const query = document.getElementById('driver-search').value.toLowerCase();
-            const filtered = allDrivers.filter(d =>
-                (d.name    || '').toLowerCase().includes(query) ||
-                (d.phone   || '').includes(query) ||
-                (d.vehicle || '').toLowerCase().includes(query)
-            );
+        function renderPendingDrivers() {
+            const pendingDrivers = allDrivers.filter(d => !d.verified || d.verified === false);
+            // Deduplicate by phone
+            const seen = new Set();
+            const unique = pendingDrivers.filter(d => { if (seen.has(d.phone)) return false; seen.add(d.phone); return true; });
 
-            if (filtered.length === 0) {
-                document.getElementById('drivers-list').innerHTML = '<p style="text-align:center;padding:2rem;color:#94a3b8;">No drivers match your search.</p>';
+            const section = document.getElementById('pending-section');
+            const list    = document.getElementById('pending-list');
+            const count   = document.getElementById('pending-count');
+
+            if (unique.length === 0) {
+                section.style.display = 'none';
                 return;
             }
+            section.style.display = 'block';
+            count.textContent     = unique.length + ' waiting';
 
-            document.getElementById('drivers-list').innerHTML = filtered.map(driver => `
-                <div class="driver-row">
+            list.innerHTML = unique.map(driver => `
+                <div class="driver-row pending-row">
                     <div class="driver-row-info">
                         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                            <strong style="font-size:1rem;">${driver.name || 'Unknown'}</strong>
-                            ${driver.verified
-                                ? '<span class="badge-v"><i class="fa-solid fa-circle-check"></i> Verified</span>'
-                                : '<span class="badge-uv">Unverified</span>'}
-                            ${driver.status === 'offline'
-                                ? '<span style="background:#f1f5f9;color:#94a3b8;font-size:0.7rem;padding:2px 7px;border-radius:999px;">Offline</span>'
-                                : '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 7px;border-radius:999px;">Online</span>'}
+                            <strong>${driver.name || 'Unknown'}</strong>
+                            <span class="badge-p"><i class="fa-solid fa-clock"></i> Pending</span>
                         </div>
                         <div style="font-size:0.82rem;color:#64748b;">
-                            <span><i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${driver.phone || '—'}</span>
+                            <i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${driver.phone || '—'}
                             &nbsp;·&nbsp;
-                            <span><i class="fa-solid fa-car" style="width:14px;"></i> ${driver.vehicle || '—'}</span>
+                            <i class="fa-solid fa-car" style="width:14px;"></i> ${driver.vehicle || '—'}
                         </div>
-                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">RC: ${driver.rc_number || '—'} &nbsp;·&nbsp; Route: ${driver.from || '—'} → ${driver.to || '—'}</div>
+                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">RC: ${driver.rc_number || '—'}</div>
                     </div>
                     <div class="driver-row-actions">
-                        ${driver.verified
-                            ? `<button class="btn-unverify" onclick="setVerified('${driver.phone}', false)"><i class="fa-solid fa-xmark"></i> Unverify</button>`
-                            : `<button class="btn-verify"   onclick="setVerified('${driver.phone}', true)"><i class="fa-solid fa-check"></i> Verify</button>`}
-                        <button class="btn-delete" onclick="deleteDriver('${driver.phone}', '${(driver.name||'').replace(/'/g,'')}')">
-                            <i class="fa-solid fa-trash"></i> Remove
+                        <a class="btn-wa" href="https://wa.me/91${driver.phone}?text=Hi ${encodeURIComponent(driver.name||'')}, please send your RC document photo for verification on PahadiRide." target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i> Request RC
+                        </a>
+                        <button class="btn-verify" onclick="setVerified('${driver.phone}', true)">
+                            <i class="fa-solid fa-check"></i> Verify & Go Live
+                        </button>
+                        <button class="btn-delete" onclick="deleteDriver('${driver.phone}','${(driver.name||'').replace(/'/g,'')}')">
+                            <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function renderAllDrivers() {
+            const query = document.getElementById('driver-search').value.toLowerCase();
+            // Deduplicate by phone
+            const seen   = new Set();
+            const unique = allDrivers.filter(d => {
+                if (seen.has(d.phone)) return false;
+                seen.add(d.phone);
+                return true;
+            });
+            const filtered = unique.filter(d =>
+                (d.name    || '').toLowerCase().includes(query) ||
+                (d.phone   || '').includes(query) ||
+                (d.vehicle || '').toLowerCase().includes(query)
+            );
+            if (filtered.length === 0) {
+                document.getElementById('drivers-list').innerHTML = '<p class="empty-state">No drivers match your search.</p>';
+                return;
+            }
+            document.getElementById('drivers-list').innerHTML = filtered.map(driver => {
+                const isPending  = !driver.verified || driver.verified === false;
+                const isVerified = driver.verified === true;
+                return `
+                <div class="driver-row">
+                    <div class="driver-row-info">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                            <strong>${driver.name || 'Unknown'}</strong>
+                            ${isVerified  ? '<span class="badge-v"><i class="fa-solid fa-circle-check"></i> Verified</span>' : ''}
+                            ${isPending   ? '<span class="badge-p"><i class="fa-solid fa-clock"></i> Pending</span>'        : ''}
+                            ${driver.status === 'offline'
+                                ? '<span style="background:#f1f5f9;color:#94a3b8;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Offline</span>'
+                                : '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Online</span>'}
+                        </div>
+                        <div style="font-size:0.82rem;color:#64748b;">
+                            <i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${driver.phone || '—'}
+                            &nbsp;·&nbsp;
+                            <i class="fa-solid fa-car" style="width:14px;"></i> ${driver.vehicle || '—'}
+                        </div>
+                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">
+                            RC: ${driver.rc_number || '—'} &nbsp;·&nbsp; Route: ${driver.from || '—'} → ${driver.to || '—'}
+                        </div>
+                    </div>
+                    <div class="driver-row-actions">
+                        ${isVerified
+                            ? `<button class="btn-unverify" onclick="setVerified('${driver.phone}', false)"><i class="fa-solid fa-xmark"></i> Unverify</button>`
+                            : `<button class="btn-verify"   onclick="setVerified('${driver.phone}', true)"><i class="fa-solid fa-check"></i> Verify</button>`}
+                        <button class="btn-delete" onclick="deleteDriver('${driver.phone}','${(driver.name||'').replace(/'/g,'')}')">
+                            <i class="fa-solid fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         async function setVerified(phone, isVerified) {
@@ -174,22 +254,23 @@
                 await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
                     action: "setVerified", phone, verified: isVerified
                 })});
-                const d = allDrivers.find(d => d.phone === phone);
-                if (d) d.verified = isVerified;
+                // Update locally
+                allDrivers.forEach(d => { if (d.phone === phone) d.verified = isVerified; });
                 updateStats();
-                renderDrivers();
+                renderPendingDrivers();
+                renderAllDrivers();
+                if (isVerified) alert(`✅ Driver verified and is now LIVE on the app!`);
             } catch (err) { alert("Failed to update. Check connection."); }
         }
 
         async function deleteDriver(phone, name) {
             if (!confirm(`Permanently remove driver "${name}" (+91 ${phone})?\n\nThis cannot be undone.`)) return;
             try {
-                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
-                    action: "deleteDriver", phone
-                })});
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:"deleteDriver", phone })});
                 allDrivers = allDrivers.filter(d => d.phone !== phone);
                 updateStats();
-                renderDrivers();
+                renderPendingDrivers();
+                renderAllDrivers();
             } catch (err) { alert("Failed to delete. Check connection."); }
         }
     </script>
