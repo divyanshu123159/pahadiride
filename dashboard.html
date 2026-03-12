@@ -118,7 +118,8 @@
                             💡 Choose <strong>Both</strong> to appear in seat sharing search AND full car booking
                         </small>
                     </div>
-                    <div class="form-row">
+                    <p id="route-note" style="font-size:0.8rem;color:#475569;background:#f1f5f9;padding:8px 12px;border-radius:6px;margin-bottom:8px;display:none;"></p>
+                    <div class="form-row" id="route-row">
                         <div class="input-group">
                             <label>From</label>
                             <select id="v-from" required>
@@ -150,7 +151,10 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-row">
+                    <div id="route-note" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;font-size:0.85rem;color:#1d4ed8;margin-bottom:12px;">
+                        <i class="fa-solid fa-circle-info"></i> Full car bookings are not route-specific — your vehicle will appear in the <strong>Full Car Booking</strong> page and <strong>Yatra</strong> page for all passengers.
+                    </div>
+                    <div class="form-row" id="price-row">
                         <div class="input-group"><label>Price (₹)</label><input type="number" id="v-price" placeholder="0 = Negotiable"></div>
                         <div class="input-group"><label>Seats Available</label><input type="number" id="v-seats" min="1" max="20"></div>
                     </div>
@@ -161,7 +165,7 @@
                         </div>
                         <div class="input-group">
                             <label><i class="fa-regular fa-calendar"></i> Available Date</label>
-                            <input type="date" id="v-available-date">
+                            <input type="date" id="v-available-date" id="v-available-date">
                         </div>
                     </div>
                     <div style="margin:-8px 0 12px 2px;">
@@ -285,6 +289,26 @@
                         ${car.departure ? `<div><i class="fa-regular fa-clock" style="color:#2563eb;width:14px;"></i> ${car.departure}</div>` : ''}
                         ${car.available_date ? `<div><i class="fa-regular fa-calendar" style="color:#2563eb;width:14px;"></i> ${car.available_date === 'Flexible' ? 'Daily / Flexible' : car.available_date}</div>` : ''}
                     </div>
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.78rem;color:#64748b;margin-bottom:4px;"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Block unavailable dates:</div>
+                        <div id="blocked-tags-${car.rc_number}" style="display:flex;flex-wrap:wrap;gap:4px;min-height:20px;">
+                            ${(car.blocked_dates && car.blocked_dates !== 'none')
+                                ? car.blocked_dates.split(',').filter(Boolean)
+                                    .filter(d => d >= new Date().toISOString().split('T')[0]) // auto-remove past dates
+                                    .map(d => 
+                                    `<span style="background:#fee2e2;color:#ef4444;font-size:0.72rem;padding:2px 8px;border-radius:99px;display:flex;align-items:center;gap:4px;">
+                                        ${d} <span onclick="removeBlockedDate('${car.rc_number}','${d}')" style="cursor:pointer;font-weight:bold;">×</span>
+                                    </span>`
+                                  ).join('') || '<span style="color:#94a3b8;font-size:0.75rem;">None — fully available</span>'
+                                : '<span style="color:#94a3b8;font-size:0.75rem;">None — fully available</span>'}
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
+                        <input type="date" id="block-date-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}" style="flex:1;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
+                        <button onclick="addBlockedDate('${car.rc_number}')" style="padding:6px 10px;background:#ef4444;color:white;border:none;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
+                            <i class="fa-solid fa-ban"></i> Block
+                        </button>
+                    </div>
                     <div style="display:flex;gap:8px;">
                         <button onclick="openModal('edit',${i})" style="flex:1;padding:7px;font-size:0.8rem;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;background:white;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                         <button onclick="removeCar('${car.rc_number}')" style="flex:1;padding:7px;font-size:0.8rem;background:#fee2e2;color:#ef4444;border:none;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i> Remove</button>
@@ -298,6 +322,11 @@
             document.getElementById('fleet-form').reset();
             document.getElementById('v-rc').style.border = '';
             document.getElementById('v-available-date').disabled = false;
+            // Set min date to today so driver cant pick past dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('v-available-date').min = today;
+            // Reset route row visibility
+            adjustFields();
             if (mode === 'edit' && index !== null) {
                 const c = myFleet[index];
                 document.getElementById('v-model').value     = c.vehicle    || '';
@@ -318,9 +347,28 @@
 
         function closeModal()  { document.getElementById('vehicle-modal').style.display = 'none'; }
         function adjustFields() {
-            if (document.getElementById('v-type').value === "Full Vehicle") {
+            const type = document.getElementById('v-type').value;
+            const routeRow = document.getElementById('route-row');
+            const priceRow = document.getElementById('price-row');
+            const routeNote = document.getElementById('route-note');
+
+            if (type === "Full Vehicle") {
+                // Full car — no specific route needed, hide route selector
                 document.getElementById('v-from').value = "Anywhere";
                 document.getElementById('v-to').value   = "Anywhere";
+                if (routeRow) routeRow.style.display = 'none';
+                if (routeNote) routeNote.style.display = 'none';
+                if (priceRow) priceRow.querySelector('label').textContent = 'Price (₹ — leave 0 for negotiable)';
+            } else if (type === "Sharing") {
+                // Sharing only — show route, explain it only shows in seat sharing search
+                if (routeRow) routeRow.style.display = '';
+                if (routeNote) { routeNote.style.display = 'block'; routeNote.innerHTML = '📍 This route is for <strong>seat sharing only</strong>. Passengers searching this route will see your car.'; }
+                if (priceRow) priceRow.querySelector('label').textContent = 'Price per Seat (₹)';
+            } else {
+                // Both — show route, appears in both
+                if (routeRow) routeRow.style.display = '';
+                if (routeNote) { routeNote.style.display = 'block'; routeNote.innerHTML = '📍 Set your <strong>main route</strong> for seat sharing. You will also appear in full car bookings for any route.'; }
+                if (priceRow) priceRow.querySelector('label').textContent = 'Price per Seat (₹)';
             }
         }
         function toggleFlexible(cb) {
@@ -378,9 +426,42 @@
                 location.reload();
             } catch (err) { alert("Failed. Check connection."); }
         }
+
+        async function addBlockedDate(rc) {
+            const dateInput = document.getElementById('block-date-' + rc);
+            const date = dateInput.value;
+            if (!date) { alert('Please pick a date first.'); return; }
+            const car = myFleet.find(c => c.rc_number === rc);
+            const current = (car && car.blocked_dates && car.blocked_dates !== 'none') ? car.blocked_dates.split(',').filter(Boolean) : [];
+            if (current.includes(date)) { alert('This date is already blocked.'); return; }
+            current.push(date);
+            const newBlocked = current.join(',');
+            try {
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                    action: 'updateBlockedDates',
+                    phone, rc_number: rc,
+                    blocked_dates: newBlocked
+                })});
+                alert('✅ Date blocked: ' + date);
+                location.reload();
+            } catch(e) { alert('Connection error.'); }
+        }
+
+        async function removeBlockedDate(rc, date) {
+            if (!confirm('Remove block for ' + date + '?')) return;
+            const car = myFleet.find(c => c.rc_number === rc);
+            const current = (car && car.blocked_dates && car.blocked_dates !== 'none') ? car.blocked_dates.split(',').filter(Boolean) : [];
+            const newBlocked = current.filter(d => d !== date).join(',') || 'none';
+            try {
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                    action: 'updateBlockedDates',
+                    phone, rc_number: rc,
+                    blocked_dates: newBlocked
+                })});
+                alert('✅ Date unblocked: ' + date);
+                location.reload();
+            } catch(e) { alert('Connection error.'); }
+        }
     </script>
 </body>
-
 </html>
-
-
