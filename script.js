@@ -94,16 +94,57 @@ async function filterAndDisplayResults(fromLocation, toLocation) {
         const liveDrivers = await response.json();
         const isFullCarPage = window.location.pathname.includes("full-car.html");
 
+        const searchDate = new URLSearchParams(window.location.search).get('date') || '';
+        const today = new Date().toISOString().split('T')[0];
+
         const results = liveDrivers.filter(driver => {
+            const tripType     = driver.trip_type || 'Sharing';
+            const availDate    = driver.available_date || 'Flexible';
+            const isFlexible   = availDate === 'Flexible';
+            const isSharingType = tripType === 'Sharing' || tripType === 'Both' || !driver.trip_type;
+            const isFullType   = tripType === 'Full Vehicle' || tripType === 'Both';
+
+            // ── ISSUE 1: Hide driver on their blocked dates ──────────────
+            if (searchDate && driver.blocked_dates && driver.blocked_dates !== 'none') {
+                const blocked = driver.blocked_dates.split(',').map(d => d.trim()).filter(Boolean);
+                if (blocked.includes(searchDate)) return false;
+            }
+
+            // ── ISSUE 2: Hide drivers whose specific date has passed ─────
+            if (!isFlexible && availDate < today) return false;
+
             if (isFullCarPage) {
-                // Full car page: show ALL drivers with Full Vehicle or Both — ignore route
-                return driver.trip_type === "Full Vehicle" || driver.trip_type === "Both";
-            } else {
-                // Seat sharing: filter by route
-                const fromMatch = driver.from === fromLocation || driver.from === "Anywhere";
-                const toMatch = driver.to === toLocation || driver.to === "Anywhere";
+                // ── ISSUE 3 & 4: Full car page ──────────────────────────
+                // Show Full Vehicle type drivers (route-specific OR Anywhere)
+                if (!isFullType) return false;
+
+                // Filter by route — if driver set specific route match it
+                // Anywhere drivers always show
+                const fromMatch = driver.from === fromLocation || driver.from === 'Anywhere';
+                const toMatch   = driver.to === toLocation     || driver.to === 'Anywhere';
                 if (!(fromMatch && toMatch)) return false;
-                return driver.trip_type === "Sharing" || driver.trip_type === "Both" || !driver.trip_type;
+
+                // Full car ignores date expiry — it stays listed
+                return true;
+
+            } else {
+                // ── Seat sharing page ────────────────────────────────────
+                if (!isSharingType) return false;
+
+                // ── ISSUE 4: Hide seat sharing if specific date has passed ─
+                // (listing disappears from seat sharing after the date)
+                if (!isFlexible && availDate < today) return false;
+
+                // ── ISSUE 3: Full Vehicle only drivers dont show in seat sharing ─
+                if (tripType === 'Full Vehicle') return false;
+
+                // If passenger picked a date and driver has specific date, must match
+                if (searchDate && !isFlexible && availDate !== searchDate) return false;
+
+                // Filter by route
+                const fromMatch = driver.from === fromLocation || driver.from === 'Anywhere';
+                const toMatch   = driver.to === toLocation     || driver.to === 'Anywhere';
+                return fromMatch && toMatch;
             }
         });
 
@@ -274,7 +315,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const toggleBtns = document.querySelector('.account-toggle');
         if(toggleBtns) toggleBtns.style.display = 'none';
     }
-
 });
-
-
