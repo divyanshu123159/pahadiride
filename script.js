@@ -274,4 +274,5 @@ document.addEventListener('DOMContentLoaded', () => {
         const toggleBtns = document.querySelector('.account-toggle');
         if(toggleBtns) toggleBtns.style.display = 'none';
     }
+
 });
