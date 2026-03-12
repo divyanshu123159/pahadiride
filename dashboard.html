@@ -7,18 +7,25 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .dashboard-header { display:flex; flex-direction:column; gap:12px; margin-bottom:25px; padding:10px; }
+        .dashboard-header { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; padding:10px; }
         .driver-info-box  { display:flex; align-items:center; gap:15px; }
         .fleet-title      { margin:20px 0 10px 0; font-size:1.2rem; display:flex; align-items:center; gap:8px; }
         .quick-add-btn    { width:fit-content; padding:10px 20px; background:#10b981; border-radius:8px; font-weight:600; font-size:0.9rem; }
 
-        /* ✅ ONLINE / OFFLINE TOGGLE */
-        .status-bar { display:flex; align-items:center; justify-content:space-between; background:white; border-radius:12px; padding:12px 16px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+        /* Pending verification banner */
+        .pending-banner { background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1.5px solid #f59e0b; border-radius:14px; padding:1.2rem 1.4rem; margin-bottom:16px; }
+        .pending-banner h4 { margin:0 0 0.4rem 0; color:#92400e; font-size:1rem; display:flex; align-items:center; gap:8px; }
+        .pending-banner p  { margin:0 0 0.9rem 0; color:#78350f; font-size:0.85rem; line-height:1.5; }
+        .pending-steps { display:flex; flex-direction:column; gap:6px; margin-bottom:0.9rem; }
+        .pending-step  { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:#78350f; }
+        .pending-step i { width:18px; }
+
+        /* Online/offline toggle */
+        .status-bar   { display:flex; align-items:center; justify-content:space-between; background:white; border-radius:12px; padding:12px 16px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
         .status-label { font-size:0.9rem; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:8px; }
-        .status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+        .status-dot   { width:10px; height:10px; border-radius:50%; display:inline-block; }
         .status-dot.online  { background:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,0.2); }
         .status-dot.offline { background:#94a3b8; }
-
         .toggle-switch { position:relative; width:52px; height:28px; }
         .toggle-switch input { opacity:0; width:0; height:0; }
         .toggle-slider { position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:34px; transition:0.3s; }
@@ -52,14 +59,27 @@
             </button>
         </div>
 
-        <!-- ✅ ONLINE / OFFLINE TOGGLE -->
-        <div class="status-bar">
+        <!-- ✅ PENDING VERIFICATION BANNER (shown only when not verified) -->
+        <div class="pending-banner" id="pending-banner" style="display:none;">
+            <h4><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> Account Pending Verification</h4>
+            <p>Your listings are currently <strong>hidden from passengers</strong> until our team verifies your RC document. Complete the steps below to go live:</p>
+            <div class="pending-steps">
+                <div class="pending-step"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Phone number verified ✓</div>
+                <div class="pending-step"><i class="fa-solid fa-circle-xmark" style="color:#f59e0b;"></i> RC document pending admin review</div>
+            </div>
+            <button onclick="sendRCWhatsApp()" style="width:100%;background:#25d366;border:none;padding:0.75rem;border-radius:8px;color:white;font-weight:700;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <i class="fa-brands fa-whatsapp"></i> Send RC Photo to Admin for Verification
+            </button>
+        </div>
+
+        <!-- Online/Offline Toggle (hidden when pending) -->
+        <div class="status-bar" id="status-bar" style="display:none;">
             <div class="status-label">
                 <span class="status-dot" id="status-dot"></span>
-                Status: <span id="status-text" style="margin-left:4px;">Loading...</span>
+                Status: <span id="status-text" style="margin-left:4px;"></span>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:0.8rem;color:#64748b;" id="toggle-hint">Toggle to go online</span>
+                <span style="font-size:0.8rem;color:#64748b;" id="toggle-hint"></span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="status-toggle" onchange="updateStatus(this.checked)">
                     <span class="toggle-slider"></span>
@@ -70,8 +90,8 @@
         <h3 class="fleet-title">
             <i class="fa-solid fa-car-side" style="color:#2563eb;"></i> Your Active Fleet
         </h3>
-
         <div id="fleet-grid" style="display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));"></div>
+
     </main>
 
     <!-- Vehicle Modal -->
@@ -83,21 +103,21 @@
             </div>
             <div class="card-body" style="padding:20px;">
                 <form id="fleet-form" onsubmit="saveVehicle(event)">
-
                     <div class="form-row">
                         <div class="input-group"><label>Model</label><input type="text" id="v-model" required></div>
                         <div class="input-group"><label>RC Number</label><input type="text" id="v-rc" maxlength="10" required style="text-transform:uppercase;"></div>
                     </div>
-
                     <div class="input-group">
                         <label>Trip Category</label>
                         <select id="v-type" required onchange="adjustFields()">
-                            <option value="Sharing">Sharing (Per Seat)</option>
-                            <option value="Full Vehicle">Full Car / Emergency</option>
-                            <option value="Both">Both</option>
+                            <option value="Sharing">Seat Sharing only (per seat price)</option>
+                            <option value="Full Vehicle">Full Car only (whole vehicle)</option>
+                            <option value="Both">Both — Seat Sharing + Full Car ⭐</option>
                         </select>
+                        <small style="color:#64748b;font-size:0.75rem;margin-top:4px;display:block;">
+                            💡 Choose <strong>Both</strong> to appear in seat sharing search AND full car booking
+                        </small>
                     </div>
-
                     <div class="form-row">
                         <div class="input-group">
                             <label>From</label>
@@ -130,13 +150,10 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="input-group"><label>Price (₹)</label><input type="number" id="v-price" placeholder="0 = Negotiable"></div>
                         <div class="input-group"><label>Seats Available</label><input type="number" id="v-seats" min="1" max="20"></div>
                     </div>
-
-                    <!-- ✅ DEPARTURE TIME + DATE -->
                     <div class="form-row">
                         <div class="input-group">
                             <label><i class="fa-regular fa-clock"></i> Departure Time</label>
@@ -152,14 +169,11 @@
                             <input type="checkbox" id="v-flexible" onchange="toggleFlexible(this)"> Runs daily / flexible dates
                         </label>
                     </div>
-
-                    <!-- ✅ PHOTO URL -->
                     <div class="input-group">
                         <label><i class="fa-regular fa-image"></i> Your Photo URL <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
-                        <input type="url" id="v-photo" placeholder="https://... (paste a link to your photo)">
-                        <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Upload your photo to Google Drive/Photos, set it to "Anyone with link", and paste the URL here.</p>
+                        <input type="url" id="v-photo" placeholder="https://... paste a link to your photo">
+                        <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Upload to Google Photos → Share → "Anyone with link" → paste URL here.</p>
                     </div>
-
                     <button type="submit" id="save-btn" class="proceed-btn" style="margin-top:10px;">Save Vehicle</button>
                 </form>
             </div>
@@ -169,25 +183,27 @@
     <script>
         function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
-        const databaseURL = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
-        const phone = localStorage.getItem('pahadiRideUser');
-        const pass  = localStorage.getItem('pahadiRidePass');
-        let myFleet = [];
-        let currentStatus = "online";
+        const databaseURL  = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
+        const phone        = localStorage.getItem('pahadiRideUser');
+        const pass         = localStorage.getItem('pahadiRidePass');
+        let myFleet        = [];
+        let currentStatus  = "online";
+        let isVerified     = false;
 
         document.addEventListener('DOMContentLoaded', loadDashboard);
 
         async function loadDashboard() {
             if (!phone || !pass) { window.location.href = 'signin.html'; return; }
             try {
-                const response = await fetch(`${databaseURL}?phone=${phone}&password=${pass}`);
-                const data = await response.json();
+                const res  = await fetch(`${databaseURL}?phone=${phone}&password=${pass}`);
+                const data = await res.json();
                 if (data.found) {
                     document.getElementById('driver-name-display').innerText  = data.name  || "Driver";
                     document.getElementById('driver-phone-display').innerText = "+91 " + phone;
-                    myFleet = data.fleet || [];
-                    currentStatus = data.status || "online";
-                    renderStatus();
+                    myFleet       = data.fleet   || [];
+                    currentStatus = data.status  || "online";
+                    isVerified    = data.verified === true || data.verified === "TRUE";
+                    renderVerificationState();
                     renderFleet();
                 } else {
                     window.location.href = 'signin.html';
@@ -195,31 +211,48 @@
             } catch (err) { console.error(err); }
         }
 
-        // ✅ RENDER ONLINE/OFFLINE STATUS
-        function renderStatus() {
-            const isOnline  = currentStatus !== "offline";
-            const dot       = document.getElementById('status-dot');
-            const text      = document.getElementById('status-text');
-            const toggle    = document.getElementById('status-toggle');
-            const hint      = document.getElementById('toggle-hint');
-            dot.className   = 'status-dot ' + (isOnline ? 'online' : 'offline');
-            text.innerText  = isOnline ? 'Online – Visible to passengers' : 'Offline – Hidden from search';
-            text.style.color = isOnline ? '#10b981' : '#94a3b8';
-            toggle.checked  = isOnline;
-            hint.innerText  = isOnline ? 'You are visible' : 'Toggle to go online';
+        function renderVerificationState() {
+            const pendingBanner = document.getElementById('pending-banner');
+            const statusBar     = document.getElementById('status-bar');
+            if (isVerified) {
+                pendingBanner.style.display = 'none';
+                statusBar.style.display     = 'flex';
+                renderStatus();
+            } else {
+                pendingBanner.style.display = 'block';
+                statusBar.style.display     = 'none';
+            }
         }
 
-        // ✅ UPDATE STATUS
+        function renderStatus() {
+            const on  = currentStatus !== "offline";
+            document.getElementById('status-dot').className  = 'status-dot ' + (on ? 'online' : 'offline');
+            document.getElementById('status-text').innerText = on ? 'Online – Visible to passengers' : 'Offline – Hidden from search';
+            document.getElementById('status-text').style.color = on ? '#10b981' : '#94a3b8';
+            document.getElementById('status-toggle').checked = on;
+            document.getElementById('toggle-hint').innerText = on ? 'You are visible' : 'Toggle to go online';
+        }
+
         async function updateStatus(isOnline) {
-            const newStatus = isOnline ? "online" : "offline";
-            currentStatus   = newStatus;
+            currentStatus = isOnline ? "online" : "offline";
             renderStatus();
             try {
-                await fetch(databaseURL, {
-                    method: 'POST', mode: 'no-cors',
-                    body: JSON.stringify({ action: "updateStatus", phone, password: pass, status: newStatus })
-                });
-            } catch (err) { console.error("Status update failed", err); }
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                    action: "updateStatus", phone, password: pass, status: currentStatus
+                })});
+            } catch (err) { console.error(err); }
+        }
+
+        // ✅ WhatsApp RC submission from dashboard
+        function sendRCWhatsApp() {
+            const name    = document.getElementById('driver-name-display').innerText;
+            const vehicle = myFleet.length > 0 ? myFleet[0].vehicle : "—";
+            const rc      = myFleet.length > 0 ? myFleet[0].rc_number : "—";
+            const msg = encodeURIComponent(
+                `🚗 RC Verification Request – PahadiRide\n\nName: ${name}\nPhone: +91 ${phone}\nVehicle: ${vehicle}\nRC: ${rc}\n\nPlease verify my account. Attaching RC photo.`
+            );
+            // ⚠️ Replace with your WhatsApp number
+            window.open(`https://wa.me/917983447349?text=${msg}`, '_blank');
         }
 
         function renderFleet() {
@@ -232,22 +265,27 @@
                 return;
             }
             grid.innerHTML = myFleet.map((car, i) => {
-                const depTime = car.departure ? `<div class="detail-item"><i class="fa-regular fa-clock" style="color:#2563eb;"></i> ${car.departure}</div>` : '';
-                const depDate = car.available_date ? `<div class="detail-item"><i class="fa-regular fa-calendar" style="color:#2563eb;"></i> ${car.available_date === 'Flexible' ? 'Daily / Flexible' : car.available_date}</div>` : '';
+                const verifiedTag = isVerified
+                    ? '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;"><i class="fa-solid fa-circle-check"></i> Live</span>'
+                    : '<span style="background:#fef3c7;color:#92400e;font-size:0.7rem;padding:2px 8px;border-radius:999px;"><i class="fa-solid fa-clock"></i> Pending</span>';
                 return `
-                <div class="dashboard-card" style="border-left:4px solid ${car.trip_type === 'Full Vehicle' ? '#ef4444' : '#3b82f6'};padding:15px;">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="dashboard-card" style="border-left:4px solid ${car.trip_type === 'Full Vehicle' ? '#ef4444' : car.trip_type === 'Both' ? '#7c3aed' : '#3b82f6'};padding:15px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                         <div>
                             <h4 style="margin:0 0 2px 0;">${car.vehicle}</h4>
                             <p style="font-size:0.8rem;color:#64748b;margin:0;">${car.rc_number}</p>
                         </div>
-                        <span style="font-size:0.7rem;background:#f1f5f9;padding:2px 8px;border-radius:4px;white-space:nowrap;">${car.trip_type}</span>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                            <span style="font-size:0.7rem;background:#f1f5f9;padding:2px 8px;border-radius:4px;">${car.trip_type}</span>
+                            ${verifiedTag}
+                        </div>
                     </div>
-                    <div style="margin:8px 0;font-size:0.8rem;color:#475569;">
+                    <div style="font-size:0.82rem;color:#475569;margin-bottom:10px;">
                         <div>${car.from === 'Anywhere' ? 'All Uttarakhand' : car.from} → ${car.to === 'Anywhere' ? 'Any Destination' : car.to}</div>
-                        ${depTime}${depDate}
+                        ${car.departure ? `<div><i class="fa-regular fa-clock" style="color:#2563eb;width:14px;"></i> ${car.departure}</div>` : ''}
+                        ${car.available_date ? `<div><i class="fa-regular fa-calendar" style="color:#2563eb;width:14px;"></i> ${car.available_date === 'Flexible' ? 'Daily / Flexible' : car.available_date}</div>` : ''}
                     </div>
-                    <div style="display:flex;gap:8px;margin-top:10px;">
+                    <div style="display:flex;gap:8px;">
                         <button onclick="openModal('edit',${i})" style="flex:1;padding:7px;font-size:0.8rem;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;background:white;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                         <button onclick="removeCar('${car.rc_number}')" style="flex:1;padding:7px;font-size:0.8rem;background:#fee2e2;color:#ef4444;border:none;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i> Remove</button>
                     </div>
@@ -260,85 +298,69 @@
             document.getElementById('fleet-form').reset();
             document.getElementById('v-rc').style.border = '';
             document.getElementById('v-available-date').disabled = false;
-
             if (mode === 'edit' && index !== null) {
                 const c = myFleet[index];
-                document.getElementById('v-model').value          = c.vehicle       || '';
-                document.getElementById('v-rc').value             = c.rc_number     || '';
-                document.getElementById('v-type').value           = c.trip_type     || 'Sharing';
-                document.getElementById('v-from').value           = c.from          || 'Tehri Garhwal';
-                document.getElementById('v-to').value             = c.to            || 'Dehradun';
-                document.getElementById('v-price').value          = c.price         || '';
-                document.getElementById('v-seats').value          = c.seats         || '';
-                document.getElementById('v-photo').value          = c.photo         || '';
-                document.getElementById('v-departure').value      = c.departure     || '';
-                const isFlexible = !c.available_date || c.available_date === 'Flexible';
-                document.getElementById('v-flexible').checked     = isFlexible;
-                document.getElementById('v-available-date').value = isFlexible ? '' : c.available_date;
-                document.getElementById('v-available-date').disabled = isFlexible;
+                document.getElementById('v-model').value     = c.vehicle    || '';
+                document.getElementById('v-rc').value        = c.rc_number  || '';
+                document.getElementById('v-type').value      = c.trip_type  || 'Sharing';
+                document.getElementById('v-from').value      = c.from       || 'Tehri Garhwal';
+                document.getElementById('v-to').value        = c.to         || 'Dehradun';
+                document.getElementById('v-price').value     = c.price      || '';
+                document.getElementById('v-seats').value     = c.seats      || '';
+                document.getElementById('v-photo').value     = c.photo      || '';
+                document.getElementById('v-departure').value = c.departure  || '';
+                const flex = !c.available_date || c.available_date === 'Flexible';
+                document.getElementById('v-flexible').checked          = flex;
+                document.getElementById('v-available-date').value      = flex ? '' : c.available_date;
+                document.getElementById('v-available-date').disabled   = flex;
             }
         }
 
-        function closeModal() { document.getElementById('vehicle-modal').style.display = 'none'; }
-
+        function closeModal()  { document.getElementById('vehicle-modal').style.display = 'none'; }
         function adjustFields() {
             if (document.getElementById('v-type').value === "Full Vehicle") {
                 document.getElementById('v-from').value = "Anywhere";
                 document.getElementById('v-to').value   = "Anywhere";
             }
         }
-
-        function toggleFlexible(checkbox) {
-            const dateInput = document.getElementById('v-available-date');
-            dateInput.disabled = checkbox.checked;
-            if (checkbox.checked) dateInput.value = '';
+        function toggleFlexible(cb) {
+            document.getElementById('v-available-date').disabled = cb.checked;
+            if (cb.checked) document.getElementById('v-available-date').value = '';
         }
 
         async function saveVehicle(event) {
             event.preventDefault();
-            const rcInput = document.getElementById('v-rc').value.toUpperCase().replace(/\s/g, '');
-            const rcPattern = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
-            if (!rcPattern.test(rcInput)) {
-                alert("🚨 Invalid RC Number!\nFormat: UK07AB1234");
+            const rcInput = document.getElementById('v-rc').value.toUpperCase().replace(/\s/g,'');
+            if (!/^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/.test(rcInput)) {
+                alert("Invalid RC Number! Format: UK07AB1234");
                 document.getElementById('v-rc').style.border = "2px solid #ef4444";
-                document.getElementById('v-rc').focus();
                 return;
             }
-
-            const isFlexible     = document.getElementById('v-flexible').checked;
-            const departureTime  = document.getElementById('v-departure').value;
-            const availableDate  = isFlexible ? "Flexible" : (document.getElementById('v-available-date').value || "Flexible");
-
-            // Format time nicely e.g. "08:30 AM"
-            let formattedDeparture = departureTime;
-            if (departureTime) {
-                const [h, m] = departureTime.split(':').map(Number);
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                formattedDeparture = `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+            const isFlexible = document.getElementById('v-flexible').checked;
+            const depRaw     = document.getElementById('v-departure').value;
+            let dep = depRaw;
+            if (depRaw) {
+                const [h, m] = depRaw.split(':').map(Number);
+                dep = `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
             }
-
             const btn = document.getElementById('save-btn');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
             btn.disabled  = true;
-
-            const tripData = {
-                action:         "updateTrip",
-                phone, password: pass,
-                name:           document.getElementById('driver-name-display').innerText,
-                vehicle:        document.getElementById('v-model').value,
-                rc_number:      rcInput,
-                from:           document.getElementById('v-from').value || "Anywhere",
-                to:             document.getElementById('v-to').value   || "Anywhere",
-                price:          document.getElementById('v-price').value  || "0",
-                seats:          document.getElementById('v-seats').value  || "4",
-                trip_type:      document.getElementById('v-type').value,
-                departure:      formattedDeparture || "Flexible",
-                available_date: availableDate,
-                photo:          document.getElementById('v-photo').value || ""
-            };
-
             try {
-                await fetch(databaseURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(tripData) });
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                    action: "updateTrip", phone, password: pass,
+                    name:           document.getElementById('driver-name-display').innerText,
+                    vehicle:        document.getElementById('v-model').value,
+                    rc_number:      rcInput,
+                    from:           document.getElementById('v-from').value || "Anywhere",
+                    to:             document.getElementById('v-to').value   || "Anywhere",
+                    price:          document.getElementById('v-price').value  || "0",
+                    seats:          document.getElementById('v-seats').value  || "4",
+                    trip_type:      document.getElementById('v-type').value,
+                    departure:      dep || "Flexible",
+                    available_date: isFlexible ? "Flexible" : (document.getElementById('v-available-date').value || "Flexible"),
+                    photo:          document.getElementById('v-photo').value || ""
+                })});
                 alert("✅ Vehicle listing updated!");
                 location.reload();
             } catch (err) {
@@ -351,12 +373,10 @@
         async function removeCar(rc) {
             if (!confirm(`Remove vehicle ${rc} from your fleet?`)) return;
             try {
-                await fetch(databaseURL, { method: 'POST', mode: 'no-cors',
-                    body: JSON.stringify({ action: "deleteVehicle", phone, rc_number: rc })
-                });
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:"deleteVehicle", phone, rc_number:rc })});
                 alert("Vehicle removed.");
                 location.reload();
-            } catch (err) { alert("Failed to remove. Check your connection."); }
+            } catch (err) { alert("Failed. Check connection."); }
         }
     </script>
 </body>

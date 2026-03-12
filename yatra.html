@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatra Booking | PahadiRide</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <style>
+        .yatra-hero {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            color: white;
+            padding: 2.5rem 1rem 2rem;
+            text-align: center;
+        }
+        .yatra-hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .yatra-hero p { opacity: 0.9; font-size: 0.95rem; }
+        .yatra-hero .om { font-size: 2.5rem; margin-bottom: 0.5rem; display: block; }
+
+        .yatra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .yatra-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .yatra-card:hover, .yatra-card.active {
+            border-color: #7c3aed;
+            box-shadow: 0 4px 16px rgba(124,58,237,0.15);
+            transform: translateY(-2px);
+        }
+        .yatra-card .yatra-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .yatra-card h3 { font-size: 0.9rem; color: #1e293b; margin-bottom: 0.25rem; }
+        .yatra-card p { font-size: 0.75rem; color: #64748b; }
+
+        .selected-yatra-info {
+            background: linear-gradient(135deg, #7c3aed15, #2563eb10);
+            border: 1px solid #7c3aed30;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            max-width: 900px;
+            margin: 0 auto 1.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            display: none;
+        }
+        .selected-yatra-info h2 { color: #7c3aed; font-size: 1.2rem; margin-bottom: 0.25rem; }
+        .selected-yatra-info p { color: #475569; font-size: 0.9rem; }
+
+        .section-heading {
+            max-width: 900px;
+            margin: 0 auto 1rem;
+            padding: 0 1rem;
+            font-size: 1.1rem;
+            color: #1e293b;
+            font-weight: 700;
+            display: none;
+        }
+
+        .results-container { max-width: 900px; margin: 0 auto; padding: 0 1rem 3rem; }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .driver-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .card-header { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
+        .driver-profile { display: flex; align-items: center; gap: 0.75rem; }
+        .driver-avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .driver-name { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+        .driver-vehicle { color: #64748b; font-size: 0.8rem; }
+        .badge-verified {
+            background: #dcfce7; color: #16a34a;
+            font-size: 0.7rem; padding: 2px 6px; border-radius: 99px;
+            font-weight: 600; margin-left: 4px;
+        }
+        .card-body { padding: 1rem; }
+        .route-info { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .route-point span { font-size: 0.85rem; color: #475569; font-weight: 600; }
+        .route-line { flex: 1; height: 2px; background: #e2e8f0; }
+        .trip-details { display: flex; gap: 1rem; }
+        .detail-item { font-size: 0.8rem; color: #64748b; }
+        .detail-item strong { color: #1e293b; }
+        .card-footer {
+            padding: 1rem; border-top: 1px solid #f1f5f9;
+            display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+        }
+        .price .amount { font-size: 1.1rem; font-weight: 700; color: #7c3aed; }
+        .action-buttons { display: flex; gap: 0.5rem; }
+        .btn-whatsapp {
+            background: #25D366; color: white; border: none;
+            padding: 0.6rem 1rem; border-radius: 0.5rem; font-weight: 600;
+            cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;
+        }
+        .btn-call {
+            background: #2563eb; color: white; border: none;
+            padding: 0.6rem 1rem; border-radius: 0.5rem; font-weight: 600;
+            cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;
+        }
+
+        .empty-state {
+            grid-column: 1/-1; text-align: center; padding: 3rem;
+            background: white; border-radius: 1rem;
+        }
+        .empty-state h3 { color: #64748b; margin-bottom: 0.5rem; }
+        .empty-state p { color: #94a3b8; font-size: 0.9rem; }
+
+        .prompt-state {
+            text-align: center; padding: 3rem 1rem;
+            color: #94a3b8;
+        }
+        .prompt-state i { font-size: 3rem; margin-bottom: 1rem; color: #c4b5fd; }
+        .prompt-state p { font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a></div>
+    <div class="nav-links">
+        <a href="index.html" class="help-link">Home</a>
+        <button class="sign-in-btn" onclick="window.location.href='signin.html'">Sign In</button>
+    </div>
+</nav>
+
+<div class="yatra-hero">
+    <span class="om">🕉️</span>
+    <h1>Yatra Car Booking</h1>
+    <p>Book a dedicated vehicle for your pilgrimage.<br>Drivers available across all of Uttarakhand.</p>
+</div>
+
+<!-- Yatra Type Selection -->
+<div class="yatra-grid" id="yatra-grid">
+    <div class="yatra-card" onclick="selectYatra('Chardham Yatra', 'Kedarnath + Badrinath + Gangotri + Yamunotri — all four dhams in one yatra.')">
+        <span class="yatra-icon">🙏</span>
+        <h3>Chardham Yatra</h3>
+        <p>All 4 Dhams</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Do Dham Yatra', 'Kedarnath + Badrinath — the two most sacred shrines of Uttarakhand.')">
+        <span class="yatra-icon">⛰️</span>
+        <h3>Do Dham Yatra</h3>
+        <p>Kedarnath + Badrinath</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Kedarnath Yatra', 'The sacred Kedarnath temple, one of the 12 Jyotirlingas of Lord Shiva.')">
+        <span class="yatra-icon">🔱</span>
+        <h3>Kedarnath Yatra</h3>
+        <p>Shiva Jyotirlinga</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Badrinath Yatra', 'The holy abode of Lord Vishnu in the Garhwal Himalayas.')">
+        <span class="yatra-icon">🪷</span>
+        <h3>Badrinath Yatra</h3>
+        <p>Vishnu Dham</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Gangotri Yatra', 'Origin of the holy Ganga river — Gangotri temple in Uttarkashi.')">
+        <span class="yatra-icon">🌊</span>
+        <h3>Gangotri Yatra</h3>
+        <p>Origin of Ganga</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Yamunotri Yatra', 'The source of river Yamuna and the westernmost Chardham shrine.')">
+        <span class="yatra-icon">💧</span>
+        <h3>Yamunotri Yatra</h3>
+        <p>Source of Yamuna</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Hemkund Sahib Yatra', 'Sacred Sikh pilgrimage site at high altitude in the Valley of Flowers region.')">
+        <span class="yatra-icon">🌸</span>
+        <h3>Hemkund Sahib</h3>
+        <p>Sikh Pilgrimage</p>
+    </div>
+    <div class="yatra-card" onclick="selectYatra('Auli Yatra', 'Beautiful ski resort and trekking destination in Chamoli district.')">
+        <span class="yatra-icon">🏔️</span>
+        <h3>Auli Trip</h3>
+        <p>Ski & Trek</p>
+    </div>
+</div>
+
+<!-- Selected Yatra Info -->
+<div class="selected-yatra-info" id="yatra-info">
+    <h2 id="yatra-title">Chardham Yatra</h2>
+    <p id="yatra-desc"></p>
+</div>
+
+<p class="section-heading" id="drivers-heading">Available Drivers for Yatra</p>
+
+<!-- Results -->
+<div class="results-container">
+    <div id="results-grid">
+        <div class="prompt-state">
+            <i class="fa-solid fa-om"></i>
+            <p>Select a yatra above to see available drivers</p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer" style="margin-top:auto;">
+    <div class="footer-bottom" style="margin-top:0; padding-top:2rem;">
+        <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
+    </div>
+</footer>
+
+<script src="script.js" defer></script>
+<script>
+const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+
+function selectYatra(name, desc) {
+    // Highlight selected card
+    document.querySelectorAll('.yatra-card').forEach(c => c.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    // Show info
+    document.getElementById('yatra-info').style.display = 'block';
+    document.getElementById('yatra-title').textContent = name;
+    document.getElementById('yatra-desc').textContent = desc;
+    document.getElementById('drivers-heading').style.display = 'block';
+
+    loadYatraDrivers(name);
+}
+
+async function loadYatraDrivers(yatraName) {
+    const grid = document.getElementById('results-grid');
+    grid.innerHTML = '<p style="text-align:center;padding:2rem;color:#64748b;">Finding available drivers...</p>';
+
+    try {
+        const res = await fetch(databaseURL + "?action=getDrivers");
+        const drivers = await res.json();
+
+        // Show drivers who cover "Anywhere" routes or Full Vehicle type
+        const yatraDrivers = drivers.filter(d => {
+            const isAnywhere = d.from === "Anywhere" || d.to === "Anywhere";
+            const isFullCar = d.trip_type === "Full Vehicle" || d.trip_type === "Both";
+            return isAnywhere || isFullCar;
+        });
+
+        if (yatraDrivers.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <h3>No drivers available right now</h3>
+                    <p>Please check back later or call us on WhatsApp for help.</p>
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = '<div class="results-grid" id="inner-grid"></div>';
+        const innerGrid = document.getElementById('inner-grid');
+
+        yatraDrivers.forEach(driver => {
+            const verifiedBadge = driver.verified
+                ? `<span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>` : '';
+            const avatarContent = driver.photo
+                ? `<img src="${driver.photo}" alt="${driver.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+                : `<i class="fa-solid fa-user-tie"></i>`;
+
+            const waMsg = encodeURIComponent(`Hi ${driver.name}, I found you on PahadiRide. I need a vehicle for ${yatraName}. Can you help?`);
+
+            innerGrid.innerHTML += `
+                <div class="driver-card">
+                    <div class="card-header">
+                        <div class="driver-profile">
+                            <div class="driver-avatar">${avatarContent}</div>
+                            <div>
+                                <div class="driver-name">${driver.name} ${verifiedBadge}</div>
+                                <div class="driver-vehicle">${driver.vehicle}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="route-info">
+                            <div class="route-point"><span>All Uttarakhand</span></div>
+                            <div class="route-line"></div>
+                            <div class="route-point"><span>Available</span></div>
+                        </div>
+                        <div class="trip-details">
+                            <div class="detail-item">Seats: <strong>${driver.seats || 'N/A'}</strong></div>
+                            <div class="detail-item">Type: <strong>${driver.trip_type || 'Full Vehicle'}</strong></div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="price"><span class="amount">Negotiable</span></div>
+                        <div class="action-buttons">
+                            <button class="btn-whatsapp" onclick="window.open('https://wa.me/91${driver.phone}?text=${waMsg}','_blank')">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </button>
+                            <button class="btn-call" onclick="window.location.href='tel:+91${driver.phone}'">
+                                <i class="fa-solid fa-phone"></i> Call
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+    } catch(err) {
+        grid.innerHTML = '<p style="text-align:center;color:red;">Connection error. Please try again.</p>';
+    }
+}
+</script>
+</body>
+</html>

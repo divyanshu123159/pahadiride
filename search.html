@@ -7,18 +7,15 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#2563eb">
     <script src="script.js" defer></script>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a></div>
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a></div>
         <div class="nav-links">
             <a href="index.html" class="help-link">Home</a>
-            <button class="sign-in-btn" onclick="window.location.href='signin.html'">
-                <i class="fa-regular fa-user-circle"></i> Sign In
-            </button>
         </div>
     </nav>
 
@@ -36,7 +33,6 @@
                     <option value="Chamba">Chamba</option>
                     <option value="Uttarkashi">Uttarkashi</option>
                     <option value="Delhi (NCR)">Delhi (NCR)</option>
-                    <option value="Anywhere">Anywhere (All Uttarakhand)</option>
                 </select>
             </div>
             <div class="input-group">
@@ -51,7 +47,6 @@
                     <option value="Chamba">Chamba</option>
                     <option value="Uttarkashi">Uttarkashi</option>
                     <option value="Delhi (NCR)">Delhi (NCR)</option>
-                    <option value="Anywhere">Anywhere (All Uttarakhand)</option>
                 </select>
             </div>
             <div class="input-group">
@@ -65,17 +60,18 @@
     <main class="results-container">
         <div class="results-header">
             <h2>Available Drivers <span id="result-count">(0 found)</span></h2>
-            <p>Showing rides from <strong id="display-from">...</strong> to <strong id="display-to">...</strong>
-               <span id="display-date" style="color:#2563eb; font-weight:600; margin-left:4px;"></span>
-            </p>
+            <p>Showing rides from <strong id="display-from">...</strong> to <strong id="display-to">...</strong></p>
         </div>
-        <div class="results-grid" id="results-grid"></div>
+
+        <div class="results-grid" id="results-grid">
+            </div>
     </main>
 
-    <footer class="footer" style="margin-top:auto;">
-        <div class="footer-bottom" style="margin-top:0;padding-top:2rem;">
+    <footer class="footer" style="margin-top: auto;">
+        <div class="footer-bottom" style="margin-top:0; padding-top:2rem;">
             <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
         </div>
     </footer>
+
 </body>
 </html>
