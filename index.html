@@ -16,9 +16,7 @@
         <div class="logo">Pahadi<span>Ride</span></div>
         <div class="nav-links">
             <a href="help.html" class="help-link">Help</a>
-            <button class="sign-in-btn" onclick="window.location.href='signin.html'">
-    <i class="fa-regular fa-user-circle"></i> Sign In
-</button>
+           
         </div>
     </nav>
 
@@ -133,17 +131,30 @@
     </section>
 
     <footer class="footer">
-        <div class="footer-top">
-            <div class="footer-brand">
-                <div class="logo">PahadiRide</div>
-                <p>Connecting the hills of Uttarakhand with reliable travel information.</p>
-            </div>
+    <div class="footer-top" style="display: flex; flex-direction: column; gap: 15px;">
+        <div class="footer-brand">
+            <div class="logo">PahadiRide</div>
+            <p>Connecting the hills of Uttarakhand with reliable travel information.</p>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
-            <p>Disclaimer: This is a directory only. Verify driver identity and vehicle fitness before boarding.</p>
+        
+        <div class="driver-access" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 10px;">
+            <p style="font-size: 0.9rem; color: #94a3b8;">Owner or Driver?</p>
+            <a href="signin.html" class="driver-link" style="color: #3b82f6; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-gauge-high"></i> Driver Login / Dashboard
+            </a>
         </div>
-    </footer>
-
+    </div>
+    
+    <div class="footer-bottom">
+        <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
+        <p>Disclaimer: This is a directory only. Verify driver identity and vehicle fitness before boarding.</p>
+        <p style="margin-top:8px;">
+            <a href="admin.html" style="color:#94a3b8; font-size:0.72rem; opacity:0.35; text-decoration:none;"
+               onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.35'">
+                ⚙ Admin
+            </a>
+        </p>
+    </div>
+</footer>
 </body>
 </html>

@@ -3,85 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account | PahadiRide</title>
+    <title>Driver Registration | PahadiRide</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#2563eb">
 </head>
 <body class="bg-gray">
 
     <nav class="navbar">
-        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a></div>
+        <div class="logo">
+            <a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a>
+        </div>
         <div class="nav-links">
-            <a href="index.html" class="help-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+            <a href="index.html" class="help-link">
+                <i class="fa-solid fa-arrow-left"></i> Back to Home
+            </a>
         </div>
     </nav>
 
     <main class="auth-container">
         <div class="auth-card" style="max-width: 32rem;">
-            <div class="auth-header">
-                <h2>Create an Account</h2>
-                <p>Join PahadiRide to find rides or list your vehicle.</p>
-            </div>
 
-            <div class="account-type-toggle">
-                <button type="button" class="type-btn active" id="btn-passenger" onclick="setAccountType('passenger')">
-                    <i class="fa-solid fa-user"></i> Passenger
-                </button>
-                <button type="button" class="type-btn" id="btn-driver" onclick="setAccountType('driver')">
-                    <i class="fa-solid fa-steering-wheel"></i> Driver
-                </button>
+            <div class="auth-header">
+                <div style="display:flex; justify-content:center; margin-bottom:0.75rem;">
+                    <div style="background:#dbeafe; color:#2563eb; padding:0.6rem 1.4rem; border-radius:999px; font-size:0.9rem; font-weight:600; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fa-solid fa-steering-wheel"></i> Driver Registration
+                    </div>
+                </div>
+                <h2>Register Your Vehicle</h2>
+                <p>Join PahadiRide to get discovered by passengers on your route.</p>
             </div>
 
             <form id="signup-form" class="auth-form">
-                
+
                 <div class="input-group">
                     <label>Full Name</label>
                     <input type="text" id="signup-name" placeholder="e.g., Divyansu Rudola" required>
                 </div>
-                
+
                 <div class="input-group">
                     <label>Phone Number (10 digits)</label>
                     <input type="tel" id="signup-phone" pattern="[0-9]{10}" placeholder="9876543210" required>
                 </div>
 
                 <div class="input-group">
-    <label>Create a Password</label>
-    <input type="password" id="signup-password" placeholder="At least 6 characters" required>
-</div>
-
-                <div id="driver-fields" class="driver-extra-fields">
-                    <div class="input-group">
-                        <label>Vehicle Model</label>
-                        <input type="text" id="signup-vehicle" placeholder="e.g., Mahindra Bolero">
-                    </div>
-                    <div class="input-group">
-                        <label>Vehicle Number (RC)</label>
-                        <input type="text" id="signup-rc" placeholder="e.g., UK 07 TA 1234">
-                    </div>
+                    <label>Create a Password</label>
+                    <input type="password" id="signup-password" placeholder="At least 6 characters" required>
                 </div>
 
-                <div class="auth-options" style="margin-top: 0.5rem;">
-                    <label class="remember-me" style="font-size: 0.8rem; align-items: flex-start;">
-                        <input type="checkbox" required style="margin-top: 0.2rem;"> 
-                        <span>I agree to the Terms & Conditions and consent to share my contact details.</span>
+                <div class="input-group">
+                    <label>Vehicle Model</label>
+                    <input type="text" id="signup-vehicle" placeholder="e.g., Mahindra Bolero" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Vehicle Number (RC)</label>
+                    <input type="text" id="signup-rc" placeholder="e.g., UK07TA1234" required>
+                </div>
+
+                <div class="auth-options" style="margin-top:0.5rem;">
+                    <label class="remember-me" style="font-size:0.8rem; align-items:flex-start;">
+                        <input type="checkbox" required style="margin-top:0.2rem;">
+                        <span>I agree to the Terms &amp; Conditions and consent to share my contact details.</span>
                     </label>
                 </div>
 
-                <div id="signup-success" class="success-toast" style="display: none; margin-top: 0.5rem;">
-                    <i class="fa-solid fa-circle-check"></i> Account created successfully!
+                <div id="signup-success" class="success-toast" style="display:none; margin-top:0.5rem;">
+                    <i class="fa-solid fa-circle-check"></i> Account created successfully! Redirecting...
                 </div>
 
-                <button type="submit" class="proceed-btn auth-btn">Create Account</button>
+                <button type="submit" class="proceed-btn auth-btn">Create Driver Account</button>
+
             </form>
 
             <div class="auth-footer">
                 <p>Already have an account? <a href="signin.html">Sign In</a></p>
             </div>
+
         </div>
     </main>
-    
- <script src="script.js" defer></script>
+
+    <script>
+        const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+
+        // Redirect to dashboard if already logged in
+        const existingPhone = localStorage.getItem('pahadiRideUser');
+        const existingPass  = localStorage.getItem('pahadiRidePass');
+        if (existingPhone && existingPass) {
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const rcRaw = document.getElementById('signup-rc').value.toUpperCase().replace(/\s/g, '');
+            const rcPattern = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+
+            if (!rcPattern.test(rcRaw)) {
+                alert("Invalid RC Number!\n\nUse format: UK07AB1234\n(State code + district + letters + 4 digits, no spaces)");
+                document.getElementById('signup-rc').focus();
+                return;
+            }
+
+            const btn = this.querySelector('.proceed-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const formData = {
+                action: "signup",
+                name: document.getElementById('signup-name').value,
+                phone: document.getElementById('signup-phone').value,
+                vehicle: document.getElementById('signup-vehicle').value,
+                rc_number: rcRaw,
+                password: document.getElementById('signup-password').value,
+                timestamp: new Date().toLocaleString()
+            };
+
+            fetch(databaseURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formData) })
+            .then(() => {
+                document.getElementById('signup-success').style.display = 'flex';
+                setTimeout(() => { window.location.href = "signin.html"; }, 2000);
+            })
+            .catch(() => {
+                alert("Connection Error. Please check your internet.");
+                btn.innerHTML = 'Create Driver Account';
+                btn.disabled = false;
+            });
+        });
+    </script>
+
 </body>
 </html>

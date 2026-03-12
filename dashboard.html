@@ -7,80 +7,88 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Targeted spacing fixes */
-        .dashboard-header {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* Reduces gap between name and button */
-            margin-bottom: 25px;
-            padding: 10px;
-        }
-        .driver-info-box {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .fleet-title {
-            margin: 20px 0 10px 0; /* Tightens gap before the list starts */
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .quick-add-btn {
-            width: fit-content;
-            padding: 10px 20px;
-            background: #10b981;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+        .dashboard-header { display:flex; flex-direction:column; gap:12px; margin-bottom:25px; padding:10px; }
+        .driver-info-box  { display:flex; align-items:center; gap:15px; }
+        .fleet-title      { margin:20px 0 10px 0; font-size:1.2rem; display:flex; align-items:center; gap:8px; }
+        .quick-add-btn    { width:fit-content; padding:10px 20px; background:#10b981; border-radius:8px; font-weight:600; font-size:0.9rem; }
+
+        /* ✅ ONLINE / OFFLINE TOGGLE */
+        .status-bar { display:flex; align-items:center; justify-content:space-between; background:white; border-radius:12px; padding:12px 16px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+        .status-label { font-size:0.9rem; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:8px; }
+        .status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+        .status-dot.online  { background:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,0.2); }
+        .status-dot.offline { background:#94a3b8; }
+
+        .toggle-switch { position:relative; width:52px; height:28px; }
+        .toggle-switch input { opacity:0; width:0; height:0; }
+        .toggle-slider { position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:34px; transition:0.3s; }
+        .toggle-slider:before { position:absolute; content:""; height:20px; width:20px; left:4px; bottom:4px; background:white; border-radius:50%; transition:0.3s; }
+        input:checked + .toggle-slider { background:#10b981; }
+        input:checked + .toggle-slider:before { transform:translateX(24px); }
     </style>
 </head>
 <body class="bg-gray">
 
     <nav class="navbar dashboard-nav">
-        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">Pahadi<span>Ride</span></a></div>
+        <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a></div>
         <div class="nav-links">
             <button class="sign-in-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
     </nav>
 
     <main class="dashboard-container">
+
+        <!-- Driver Info -->
         <div class="dashboard-header">
             <div class="driver-info-box">
                 <div class="driver-avatar"><i class="fa-solid fa-user-tie"></i></div>
                 <div>
-                    <h2 id="driver-name-display" style="margin:0; font-size: 1.6rem;">Divyanshu Rudola</h2>
-                    <p id="driver-phone-display" style="margin:2px 0; color: #64748b; font-size: 0.9rem;">+91 7983447349</p>
+                    <h2 id="driver-name-display" style="margin:0;font-size:1.6rem;">Loading...</h2>
+                    <p id="driver-phone-display" style="margin:2px 0;color:#64748b;font-size:0.9rem;">+91 ...</p>
                 </div>
             </div>
-            
             <button onclick="openModal('add')" class="proceed-btn quick-add-btn">
                 <i class="fa-solid fa-plus"></i> Add New Vehicle
             </button>
         </div>
 
-        <h3 class="fleet-title">
-            <i class="fa-solid fa-car-side" style="color: #2563eb;"></i> Your Active Fleet
-        </h3>
-        
-        <div id="fleet-grid" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <!-- ✅ ONLINE / OFFLINE TOGGLE -->
+        <div class="status-bar">
+            <div class="status-label">
+                <span class="status-dot" id="status-dot"></span>
+                Status: <span id="status-text" style="margin-left:4px;">Loading...</span>
             </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:0.8rem;color:#64748b;" id="toggle-hint">Toggle to go online</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="status-toggle" onchange="updateStatus(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <h3 class="fleet-title">
+            <i class="fa-solid fa-car-side" style="color:#2563eb;"></i> Your Active Fleet
+        </h3>
+
+        <div id="fleet-grid" style="display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));"></div>
     </main>
 
-    <div id="vehicle-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; padding:20px; overflow-y:auto;">
-        <div class="dashboard-card" style="max-width:480px; margin: 20px auto; background:white; border-radius: 12px; overflow: hidden;">
-            <div class="card-header" style="background: #2563eb; color: white; padding: 15px; display: flex; justify-content: space-between;">
+    <!-- Vehicle Modal -->
+    <div id="vehicle-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;padding:20px;overflow-y:auto;">
+        <div class="dashboard-card" style="max-width:480px;margin:20px auto;background:white;border-radius:12px;overflow:hidden;">
+            <div class="card-header" style="background:#2563eb;color:white;padding:15px;display:flex;justify-content:space-between;">
                 <h3 id="modal-title" style="margin:0;">Vehicle Details</h3>
-                <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:1.5rem;">&times;</button>
+                <button onclick="closeModal()" style="background:none;border:none;color:white;font-size:1.5rem;">&times;</button>
             </div>
-            <div class="card-body" style="padding: 20px;">
+            <div class="card-body" style="padding:20px;">
                 <form id="fleet-form" onsubmit="saveVehicle(event)">
+
                     <div class="form-row">
                         <div class="input-group"><label>Model</label><input type="text" id="v-model" required></div>
-                        <div class="input-group"><label>RC Number</label><input type="text" id="v-rc" maxlength="10" required></div>
+                        <div class="input-group"><label>RC Number</label><input type="text" id="v-rc" maxlength="10" required style="text-transform:uppercase;"></div>
                     </div>
+
                     <div class="input-group">
                         <label>Trip Category</label>
                         <select id="v-type" required onchange="adjustFields()">
@@ -89,188 +97,267 @@
                             <option value="Both">Both</option>
                         </select>
                     </div>
-                      <div class="form-row">
-    <div class="input-group">
-        <label>From</label>
-        <select id="v-from" required>
-            <option value="Tehri Garhwal">Tehri Garhwal</option>
-            <option value="Dehradun">Dehradun</option>
-            <option value="Rishikesh">Rishikesh</option>
-            <option value="Srinagar">Srinagar</option>
-            <option value="Devprayag">Devprayag</option>
-            <option value="Chamba">Chamba</option>
-            <option value="Uttarkashi">Uttarkashi</option>
-            <option value="Delhi (NCR)">Delhi (NCR)</option>
-            <option value="Anywhere">Anywhere (All Uttarakhand)</option>
-        </select>
-    </div>
-    <div class="input-group">
-        <label>To</label>
-        <select id="v-to" required>
-            <option value="Tehri Garhwal">Tehri Garhwal</option>
-            <option value="Dehradun">Dehradun</option>
-            <option value="Rishikesh">Rishikesh</option>
-            <option value="Srinagar">Srinagar</option>
-            <option value="Devprayag">Devprayag</option>
-            <option value="Chamba">Chamba</option>
-            <option value="Uttarkashi">Uttarkashi</option>
-            <option value="Delhi (NCR)">Delhi (NCR)</option>
-            <option value="Anywhere">Anywhere (All Uttarakhand)</option>
-        </select>
-    </div>
-</div>
+
                     <div class="form-row">
-                        <div class="input-group"><label>Price (₹)</label><input type="number" id="v-price"></div>
-                        <div class="input-group"><label>Seats</label><input type="number" id="v-seats"></div>
+                        <div class="input-group">
+                            <label>From</label>
+                            <select id="v-from" required>
+                                <option value="Tehri Garhwal">Tehri Garhwal</option>
+                                <option value="Dehradun">Dehradun</option>
+                                <option value="Rishikesh">Rishikesh</option>
+                                <option value="Haridwar">Haridwar</option>
+                                <option value="Srinagar">Srinagar</option>
+                                <option value="Devprayag">Devprayag</option>
+                                <option value="Chamba">Chamba</option>
+                                <option value="Uttarkashi">Uttarkashi</option>
+                                <option value="Delhi (NCR)">Delhi (NCR)</option>
+                                <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>To</label>
+                            <select id="v-to" required>
+                                <option value="Tehri Garhwal">Tehri Garhwal</option>
+                                <option value="Dehradun">Dehradun</option>
+                                <option value="Rishikesh">Rishikesh</option>
+                                <option value="Haridwar">Haridwar</option>
+                                <option value="Srinagar">Srinagar</option>
+                                <option value="Devprayag">Devprayag</option>
+                                <option value="Chamba">Chamba</option>
+                                <option value="Uttarkashi">Uttarkashi</option>
+                                <option value="Delhi (NCR)">Delhi (NCR)</option>
+                                <option value="Anywhere">Anywhere (All Uttarakhand)</option>
+                            </select>
+                        </div>
                     </div>
-                    <button type="submit" id="save-btn" class="proceed-btn" style="margin-top:15px;">Save Vehicle</button>
+
+                    <div class="form-row">
+                        <div class="input-group"><label>Price (₹)</label><input type="number" id="v-price" placeholder="0 = Negotiable"></div>
+                        <div class="input-group"><label>Seats Available</label><input type="number" id="v-seats" min="1" max="20"></div>
+                    </div>
+
+                    <!-- ✅ DEPARTURE TIME + DATE -->
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label><i class="fa-regular fa-clock"></i> Departure Time</label>
+                            <input type="time" id="v-departure">
+                        </div>
+                        <div class="input-group">
+                            <label><i class="fa-regular fa-calendar"></i> Available Date</label>
+                            <input type="date" id="v-available-date">
+                        </div>
+                    </div>
+                    <div style="margin:-8px 0 12px 2px;">
+                        <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:#64748b;cursor:pointer;">
+                            <input type="checkbox" id="v-flexible" onchange="toggleFlexible(this)"> Runs daily / flexible dates
+                        </label>
+                    </div>
+
+                    <!-- ✅ PHOTO URL -->
+                    <div class="input-group">
+                        <label><i class="fa-regular fa-image"></i> Your Photo URL <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                        <input type="url" id="v-photo" placeholder="https://... (paste a link to your photo)">
+                        <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Upload your photo to Google Drive/Photos, set it to "Anyone with link", and paste the URL here.</p>
+                    </div>
+
+                    <button type="submit" id="save-btn" class="proceed-btn" style="margin-top:10px;">Save Vehicle</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+        const databaseURL = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
         const phone = localStorage.getItem('pahadiRideUser');
-        const pass = localStorage.getItem('pahadiRidePass');
+        const pass  = localStorage.getItem('pahadiRidePass');
         let myFleet = [];
+        let currentStatus = "online";
 
         document.addEventListener('DOMContentLoaded', loadDashboard);
 
         async function loadDashboard() {
-            if (!phone || !pass) return;
+            if (!phone || !pass) { window.location.href = 'signin.html'; return; }
             try {
                 const response = await fetch(`${databaseURL}?phone=${phone}&password=${pass}`);
                 const data = await response.json();
                 if (data.found) {
-                    myFleet = data.fleet;
+                    document.getElementById('driver-name-display').innerText  = data.name  || "Driver";
+                    document.getElementById('driver-phone-display').innerText = "+91 " + phone;
+                    myFleet = data.fleet || [];
+                    currentStatus = data.status || "online";
+                    renderStatus();
                     renderFleet();
+                } else {
+                    window.location.href = 'signin.html';
                 }
             } catch (err) { console.error(err); }
         }
 
+        // ✅ RENDER ONLINE/OFFLINE STATUS
+        function renderStatus() {
+            const isOnline  = currentStatus !== "offline";
+            const dot       = document.getElementById('status-dot');
+            const text      = document.getElementById('status-text');
+            const toggle    = document.getElementById('status-toggle');
+            const hint      = document.getElementById('toggle-hint');
+            dot.className   = 'status-dot ' + (isOnline ? 'online' : 'offline');
+            text.innerText  = isOnline ? 'Online – Visible to passengers' : 'Offline – Hidden from search';
+            text.style.color = isOnline ? '#10b981' : '#94a3b8';
+            toggle.checked  = isOnline;
+            hint.innerText  = isOnline ? 'You are visible' : 'Toggle to go online';
+        }
+
+        // ✅ UPDATE STATUS
+        async function updateStatus(isOnline) {
+            const newStatus = isOnline ? "online" : "offline";
+            currentStatus   = newStatus;
+            renderStatus();
+            try {
+                await fetch(databaseURL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ action: "updateStatus", phone, password: pass, status: newStatus })
+                });
+            } catch (err) { console.error("Status update failed", err); }
+        }
+
         function renderFleet() {
             const grid = document.getElementById('fleet-grid');
-            grid.innerHTML = myFleet.map((car, i) => `
-                <div class="dashboard-card" style="border-left: 4px solid ${car.trip_type === 'Full Vehicle' ? '#ef4444' : '#3b82f6'}; padding: 15px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <h4 style="margin:0;">${car.vehicle}</h4>
-                        <span style="font-size:0.7rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">${car.trip_type}</span>
+            if (myFleet.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2.5rem;background:white;border-radius:1rem;">
+                    <i class="fa-solid fa-car" style="font-size:2.5rem;color:#cbd5e1;display:block;margin-bottom:1rem;"></i>
+                    <p style="color:#64748b;">No vehicles listed yet.<br>Click <strong>Add New Vehicle</strong> to get started.</p>
+                </div>`;
+                return;
+            }
+            grid.innerHTML = myFleet.map((car, i) => {
+                const depTime = car.departure ? `<div class="detail-item"><i class="fa-regular fa-clock" style="color:#2563eb;"></i> ${car.departure}</div>` : '';
+                const depDate = car.available_date ? `<div class="detail-item"><i class="fa-regular fa-calendar" style="color:#2563eb;"></i> ${car.available_date === 'Flexible' ? 'Daily / Flexible' : car.available_date}</div>` : '';
+                return `
+                <div class="dashboard-card" style="border-left:4px solid ${car.trip_type === 'Full Vehicle' ? '#ef4444' : '#3b82f6'};padding:15px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <h4 style="margin:0 0 2px 0;">${car.vehicle}</h4>
+                            <p style="font-size:0.8rem;color:#64748b;margin:0;">${car.rc_number}</p>
+                        </div>
+                        <span style="font-size:0.7rem;background:#f1f5f9;padding:2px 8px;border-radius:4px;white-space:nowrap;">${car.trip_type}</span>
                     </div>
-                    <p style="font-size:0.8rem; color:#64748b; margin:5px 0;">${car.rc_number}</p>
-                    <div style="margin-top:10px; display:flex; gap:8px;">
-                        <button onclick="openModal('edit', ${i})" style="flex:1; padding:6px; font-size:0.8rem; border:1px solid #e2e8f0; border-radius:4px;">Edit</button>
-                        <button onclick="removeCar('${car.rc_number}')" style="flex:1; padding:6px; font-size:0.8rem; background:#fee2e2; color:#ef4444; border:none; border-radius:4px;">Remove</button>
+                    <div style="margin:8px 0;font-size:0.8rem;color:#475569;">
+                        <div>${car.from === 'Anywhere' ? 'All Uttarakhand' : car.from} → ${car.to === 'Anywhere' ? 'Any Destination' : car.to}</div>
+                        ${depTime}${depDate}
                     </div>
-                </div>
-            `).join('');
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                        <button onclick="openModal('edit',${i})" style="flex:1;padding:7px;font-size:0.8rem;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;background:white;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <button onclick="removeCar('${car.rc_number}')" style="flex:1;padding:7px;font-size:0.8rem;background:#fee2e2;color:#ef4444;border:none;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i> Remove</button>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function openModal(mode, index = null) {
             document.getElementById('vehicle-modal').style.display = 'block';
-            if (mode === 'edit') {
+            document.getElementById('fleet-form').reset();
+            document.getElementById('v-rc').style.border = '';
+            document.getElementById('v-available-date').disabled = false;
+
+            if (mode === 'edit' && index !== null) {
                 const c = myFleet[index];
-                document.getElementById('v-model').value = c.vehicle;
-                document.getElementById('v-rc').value = c.rc_number;
-                document.getElementById('v-type').value = c.trip_type;
-                document.getElementById('v-from').value = c.from;
-                document.getElementById('v-to').value = c.to;
-                document.getElementById('v-price').value = c.price;
-                document.getElementById('v-seats').value = c.seats;
+                document.getElementById('v-model').value          = c.vehicle       || '';
+                document.getElementById('v-rc').value             = c.rc_number     || '';
+                document.getElementById('v-type').value           = c.trip_type     || 'Sharing';
+                document.getElementById('v-from').value           = c.from          || 'Tehri Garhwal';
+                document.getElementById('v-to').value             = c.to            || 'Dehradun';
+                document.getElementById('v-price').value          = c.price         || '';
+                document.getElementById('v-seats').value          = c.seats         || '';
+                document.getElementById('v-photo').value          = c.photo         || '';
+                document.getElementById('v-departure').value      = c.departure     || '';
+                const isFlexible = !c.available_date || c.available_date === 'Flexible';
+                document.getElementById('v-flexible').checked     = isFlexible;
+                document.getElementById('v-available-date').value = isFlexible ? '' : c.available_date;
+                document.getElementById('v-available-date').disabled = isFlexible;
             }
         }
 
         function closeModal() { document.getElementById('vehicle-modal').style.display = 'none'; }
-        
+
         function adjustFields() {
-            if(document.getElementById('v-type').value === "Full Vehicle") {
+            if (document.getElementById('v-type').value === "Full Vehicle") {
                 document.getElementById('v-from').value = "Anywhere";
-                document.getElementById('v-to').value = "Anywhere";
+                document.getElementById('v-to').value   = "Anywhere";
             }
         }
 
+        function toggleFlexible(checkbox) {
+            const dateInput = document.getElementById('v-available-date');
+            dateInput.disabled = checkbox.checked;
+            if (checkbox.checked) dateInput.value = '';
+        }
+
         async function saveVehicle(event) {
-    event.preventDefault();
-    
-    // 1. Clean the RC Number (Remove spaces and make Uppercase)
-    const rcInput = document.getElementById('v-rc').value.toUpperCase().replace(/\s/g, '');
-    
-    // 2. The Indian RC Pattern
-    // Matches: 2 Letters (State) + 2 Digits (District) + 1-2 Letters + 4 Digits
-    const rcPattern = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+            event.preventDefault();
+            const rcInput = document.getElementById('v-rc').value.toUpperCase().replace(/\s/g, '');
+            const rcPattern = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+            if (!rcPattern.test(rcInput)) {
+                alert("🚨 Invalid RC Number!\nFormat: UK07AB1234");
+                document.getElementById('v-rc').style.border = "2px solid #ef4444";
+                document.getElementById('v-rc').focus();
+                return;
+            }
 
-    if (!rcPattern.test(rcInput)) {
-        // Blocks the save if the format is wrong
-        alert("🚨 INVALID RC NUMBER!\n\nPlease use the correct format: UK07AB1234\n(No spaces, start with State code)");
-        document.getElementById('v-rc').focus();
-        document.getElementById('v-rc').style.border = "2px solid #ef4444";
-        return; // This is the 'Blocker' - the code stops here!
-    }
+            const isFlexible     = document.getElementById('v-flexible').checked;
+            const departureTime  = document.getElementById('v-departure').value;
+            const availableDate  = isFlexible ? "Flexible" : (document.getElementById('v-available-date').value || "Flexible");
 
-    // 3. If validation passes, proceed to save
-    const btn = document.getElementById('save-btn');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-    btn.disabled = true;
+            // Format time nicely e.g. "08:30 AM"
+            let formattedDeparture = departureTime;
+            if (departureTime) {
+                const [h, m] = departureTime.split(':').map(Number);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                formattedDeparture = `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+            }
 
-    const tripData = {
-        action: "updateTrip",
-        phone: phone,
-        password: pass,
-        name: document.getElementById('driver-name-display').innerText,
-        vehicle: document.getElementById('v-model').value,
-        rc_number: rcInput, // Sends the cleaned RC number
-        from: document.getElementById('v-from').value || "Anywhere",
-        to: document.getElementById('v-to').value || "Anywhere",
-        price: document.getElementById('v-price').value || "0",
-        seats: document.getElementById('v-seats').value || "4",
-        trip_type: document.getElementById('v-type').value,
-        time: "Flexible"
-    };
+            const btn = document.getElementById('save-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            btn.disabled  = true;
 
-    try {
-        await fetch(databaseURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(tripData) });
-        alert("✅ Success! Vehicle listing updated.");
-        location.reload(); // Refreshes to show the new card
-    } catch (err) {
-        alert("❌ Connection Error. Check your internet.");
-        btn.disabled = false;
-        btn.innerHTML = "Save Vehicle";
-    }
-}
-async function removeCar(rc) {
-    if (!confirm(`Are you sure you want to remove vehicle ${rc} from your fleet?`)) {
-        return; // User cancelled
-    }
+            const tripData = {
+                action:         "updateTrip",
+                phone, password: pass,
+                name:           document.getElementById('driver-name-display').innerText,
+                vehicle:        document.getElementById('v-model').value,
+                rc_number:      rcInput,
+                from:           document.getElementById('v-from').value || "Anywhere",
+                to:             document.getElementById('v-to').value   || "Anywhere",
+                price:          document.getElementById('v-price').value  || "0",
+                seats:          document.getElementById('v-seats').value  || "4",
+                trip_type:      document.getElementById('v-type').value,
+                departure:      formattedDeparture || "Flexible",
+                available_date: availableDate,
+                photo:          document.getElementById('v-photo').value || ""
+            };
 
-    // Visual feedback: find the card and make it look "loading"
-    const btn = event.target;
-    const originalText = btn.innerText;
-    btn.innerText = "Removing...";
-    btn.disabled = true;
+            try {
+                await fetch(databaseURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(tripData) });
+                alert("✅ Vehicle listing updated!");
+                location.reload();
+            } catch (err) {
+                alert("❌ Connection Error.");
+                btn.disabled  = false;
+                btn.innerHTML = "Save Vehicle";
+            }
+        }
 
-    const deleteData = {
-        action: "deleteVehicle",
-        phone: localStorage.getItem('pahadiRideUser'),
-        rc_number: rc
-    };
-
-    try {
-        // We use POST to send the delete command safely
-        await fetch(databaseURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(deleteData)
-        });
-        
-        alert("Vehicle removed from fleet.");
-        location.reload(); // Refresh to show the updated list
-    } catch (err) {
-        alert("Failed to remove vehicle. Check your connection.");
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
-}
+        async function removeCar(rc) {
+            if (!confirm(`Remove vehicle ${rc} from your fleet?`)) return;
+            try {
+                await fetch(databaseURL, { method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ action: "deleteVehicle", phone, rc_number: rc })
+                });
+                alert("Vehicle removed.");
+                location.reload();
+            } catch (err) { alert("Failed to remove. Check your connection."); }
+        }
     </script>
 </body>
-
 </html>
