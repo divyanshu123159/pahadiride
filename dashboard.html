@@ -303,11 +303,41 @@
                                 : '<span style="color:#94a3b8;font-size:0.75rem;">None — fully available</span>'}
                         </div>
                     </div>
-                    <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
-                        <input type="date" id="block-date-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}" style="flex:1;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
-                        <button onclick="addBlockedDate('${car.rc_number}')" style="padding:6px 10px;background:#ef4444;color:white;border:none;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
-                            <i class="fa-solid fa-ban"></i> Block
-                        </button>
+                    <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:8px;margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:6px;"><i class="fa-solid fa-calendar-xmark" style="color:#ef4444;"></i> Block dates when unavailable:</div>
+                        
+                        <!-- Selected dates preview -->
+                        <div id="pending-tags-${car.rc_number}" style="display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-bottom:6px;"></div>
+
+                        <!-- Date picker row -->
+                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px;">
+                            <input type="date" id="block-pick-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}" 
+                                style="flex:1;min-width:140px;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
+                            <button onclick="addToQueue('${car.rc_number}')" 
+                                style="padding:6px 10px;background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
+                                + Add Date
+                            </button>
+                            <button onclick="saveBlockedDates('${car.rc_number}')" 
+                                style="padding:6px 12px;background:#ef4444;color:white;border:none;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
+                                <i class="fa-solid fa-ban"></i> Block All
+                            </button>
+                        </div>
+
+                        <!-- Range option -->
+                        <details style="margin-top:4px;">
+                            <summary style="font-size:0.72rem;color:#94a3b8;cursor:pointer;">+ Also block a date range (e.g. 15–20 March)</summary>
+                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px;">
+                                <input type="date" id="block-from-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}"
+                                    style="flex:1;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
+                                <span style="color:#64748b;font-size:0.8rem;">to</span>
+                                <input type="date" id="block-to-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}"
+                                    style="flex:1;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
+                                <button onclick="addRangeToQueue('${car.rc_number}')"
+                                    style="padding:6px 10px;background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
+                                    + Add Range
+                                </button>
+                            </div>
+                        </details>
                     </div>
                     <div style="display:flex;gap:8px;">
                         <button onclick="openModal('edit',${i})" style="flex:1;padding:7px;font-size:0.8rem;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;background:white;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
@@ -427,22 +457,74 @@
             } catch (err) { alert("Failed. Check connection."); }
         }
 
-        async function addBlockedDate(rc) {
-            const dateInput = document.getElementById('block-date-' + rc);
-            const date = dateInput.value;
+        // Queue of dates to block (before saving)
+        const blockQueue = {};
+
+        function addToQueue(rc) {
+            const input = document.getElementById('block-pick-' + rc);
+            const date  = input.value;
             if (!date) { alert('Please pick a date first.'); return; }
+            if (!blockQueue[rc]) blockQueue[rc] = [];
+            if (blockQueue[rc].includes(date)) { alert('Already added.'); return; }
+            blockQueue[rc].push(date);
+            input.value = '';
+            renderQueue(rc);
+        }
+
+        function addRangeToQueue(rc) {
+            const from = document.getElementById('block-from-' + rc).value;
+            const to   = document.getElementById('block-to-'   + rc).value;
+            if (!from || !to) { alert('Please pick both From and To dates.'); return; }
+            if (to < from)    { alert('To date must be after From date.'); return; }
+            if (!blockQueue[rc]) blockQueue[rc] = [];
+            let cursor = new Date(from);
+            const end  = new Date(to);
+            let added  = 0;
+            while (cursor <= end) {
+                const d = cursor.toISOString().split('T')[0];
+                if (!blockQueue[rc].includes(d)) { blockQueue[rc].push(d); added++; }
+                cursor.setDate(cursor.getDate() + 1);
+            }
+            document.getElementById('block-from-' + rc).value = '';
+            document.getElementById('block-to-'   + rc).value = '';
+            alert(added + ' dates added to queue. Click "Block All" to save.');
+            renderQueue(rc);
+        }
+
+        function renderQueue(rc) {
+            const container = document.getElementById('pending-tags-' + rc);
+            if (!container) return;
+            if (!blockQueue[rc] || blockQueue[rc].length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = blockQueue[rc].sort().map(d =>
+                `<span style="background:#fef3c7;color:#92400e;font-size:0.72rem;padding:2px 8px;border-radius:99px;display:flex;align-items:center;gap:4px;">
+                    ${d} <span onclick="removeFromQueue('${rc}','${d}')" style="cursor:pointer;font-weight:bold;">×</span>
+                </span>`
+            ).join('') + `<span style="font-size:0.7rem;color:#64748b;align-self:center;"> ← click Block All to save</span>`;
+        }
+
+        function removeFromQueue(rc, date) {
+            if (!blockQueue[rc]) return;
+            blockQueue[rc] = blockQueue[rc].filter(d => d !== date);
+            renderQueue(rc);
+        }
+
+        async function saveBlockedDates(rc) {
+            const queue = blockQueue[rc] || [];
+            if (queue.length === 0) { alert('No dates added to block. Use "+ Add Date" first.'); return; }
             const car = myFleet.find(c => c.rc_number === rc);
-            const current = (car && car.blocked_dates && car.blocked_dates !== 'none') ? car.blocked_dates.split(',').filter(Boolean) : [];
-            if (current.includes(date)) { alert('This date is already blocked.'); return; }
-            current.push(date);
-            const newBlocked = current.join(',');
+            const existing = (car && car.blocked_dates && car.blocked_dates !== 'none')
+                ? car.blocked_dates.split(',').filter(Boolean) : [];
+            const allBlocked = [...new Set([...existing, ...queue])].join(',');
             try {
                 await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
                     action: 'updateBlockedDates',
                     phone, rc_number: rc,
-                    blocked_dates: newBlocked
+                    blocked_dates: allBlocked
                 })});
-                alert('✅ Date blocked: ' + date);
+                alert('✅ ' + queue.length + ' date(s) blocked successfully!');
                 location.reload();
             } catch(e) { alert('Connection error.'); }
         }
@@ -465,4 +547,3 @@
     </script>
 </body>
 </html>
-
