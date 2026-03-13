@@ -9,6 +9,13 @@
     <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
     <script src="script.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const d = document.getElementById('search-date');
+    if (d) d.min = today;
+});
+</script>
 </head>
 <body>
 
@@ -24,29 +31,115 @@
             <div class="input-group">
                 <label>From</label>
                 <select name="from" id="search-from">
-                    <option value="Tehri Garhwal">Tehri Garhwal</option>
-                    <option value="Dehradun">Dehradun</option>
-                    <option value="Rishikesh">Rishikesh</option>
-                    <option value="Haridwar">Haridwar</option>
-                    <option value="Srinagar">Srinagar</option>
-                    <option value="Devprayag">Devprayag</option>
+                    <option value="Almora">Almora</option>
+                    <option value="Augustmuni">Augustmuni</option>
+                    <option value="Badrinath">Badrinath</option>
+                    <option value="Bageshwar">Bageshwar</option>
+                    <option value="Barkot">Barkot</option>
+                    <option value="Bhimtal">Bhimtal</option>
                     <option value="Chamba">Chamba</option>
-                    <option value="Uttarkashi">Uttarkashi</option>
+                    <option value="Champawat">Champawat</option>
+                    <option value="Dehradun">Dehradun</option>
                     <option value="Delhi (NCR)">Delhi (NCR)</option>
+                    <option value="Devprayag">Devprayag</option>
+                    <option value="Dharchula">Dharchula</option>
+                    <option value="Doiwala">Doiwala</option>
+                    <option value="Gangotri">Gangotri</option>
+                    <option value="Ghansali">Ghansali</option>
+                    <option value="Gopeshwar">Gopeshwar</option>
+                    <option value="Haldwani">Haldwani</option>
+                    <option value="Haridwar">Haridwar</option>
+                    <option value="Harsil">Harsil</option>
+                    <option value="Jaspur">Jaspur</option>
+                    <option value="Joshimath">Joshimath</option>
+                    <option value="Kaladhungi">Kaladhungi</option>
+                    <option value="Karnaprayag">Karnaprayag</option>
+                    <option value="Kashipur">Kashipur</option>
+                    <option value="Kedarnath">Kedarnath</option>
+                    <option value="Khatima">Khatima</option>
+                    <option value="Kotdwar">Kotdwar</option>
+                    <option value="Laksar">Laksar</option>
+                    <option value="Lansdowne">Lansdowne</option>
+                    <option value="Lohaghat">Lohaghat</option>
+                    <option value="Munsiyari">Munsiyari</option>
+                    <option value="Mussoorie">Mussoorie</option>
+                    <option value="Nainital">Nainital</option>
+                    <option value="Nandprayag">Nandprayag</option>
+                    <option value="Narendra Nagar">Narendra Nagar</option>
+                    <option value="New Tehri">New Tehri</option>
+                    <option value="Pauri">Pauri</option>
+                    <option value="Pithoragarh">Pithoragarh</option>
+                    <option value="Ramnagar">Ramnagar</option>
+                    <option value="Ranikhet">Ranikhet</option>
+                    <option value="Rishikesh">Rishikesh</option>
+                    <option value="Roorkee">Roorkee</option>
+                    <option value="Rudraprayag">Rudraprayag</option>
+                    <option value="Rudrapur">Rudrapur</option>
+                    <option value="Sitarganj">Sitarganj</option>
+                    <option value="Someshwar">Someshwar</option>
+                    <option value="Srinagar">Srinagar</option>
+                    <option value="Tanakpur">Tanakpur</option>
+                    <option value="Tehri Garhwal" selected>Tehri Garhwal</option>
+                    <option value="Ukhimath">Ukhimath</option>
+                    <option value="Uttarkashi">Uttarkashi</option>
+                    <option value="Vikasnagar">Vikasnagar</option>
                 </select>
             </div>
             <div class="input-group">
                 <label>To</label>
                 <select name="to" id="search-to">
-                    <option value="Tehri Garhwal">Tehri Garhwal</option>
-                    <option value="Dehradun">Dehradun</option>
-                    <option value="Rishikesh">Rishikesh</option>
-                    <option value="Haridwar">Haridwar</option>
-                    <option value="Srinagar">Srinagar</option>
-                    <option value="Devprayag">Devprayag</option>
+                    <option value="Almora">Almora</option>
+                    <option value="Augustmuni">Augustmuni</option>
+                    <option value="Badrinath">Badrinath</option>
+                    <option value="Bageshwar">Bageshwar</option>
+                    <option value="Barkot">Barkot</option>
+                    <option value="Bhimtal">Bhimtal</option>
                     <option value="Chamba">Chamba</option>
-                    <option value="Uttarkashi">Uttarkashi</option>
+                    <option value="Champawat">Champawat</option>
+                    <option value="Dehradun" selected>Dehradun</option>
                     <option value="Delhi (NCR)">Delhi (NCR)</option>
+                    <option value="Devprayag">Devprayag</option>
+                    <option value="Dharchula">Dharchula</option>
+                    <option value="Doiwala">Doiwala</option>
+                    <option value="Gangotri">Gangotri</option>
+                    <option value="Ghansali">Ghansali</option>
+                    <option value="Gopeshwar">Gopeshwar</option>
+                    <option value="Haldwani">Haldwani</option>
+                    <option value="Haridwar">Haridwar</option>
+                    <option value="Harsil">Harsil</option>
+                    <option value="Jaspur">Jaspur</option>
+                    <option value="Joshimath">Joshimath</option>
+                    <option value="Kaladhungi">Kaladhungi</option>
+                    <option value="Karnaprayag">Karnaprayag</option>
+                    <option value="Kashipur">Kashipur</option>
+                    <option value="Kedarnath">Kedarnath</option>
+                    <option value="Khatima">Khatima</option>
+                    <option value="Kotdwar">Kotdwar</option>
+                    <option value="Laksar">Laksar</option>
+                    <option value="Lansdowne">Lansdowne</option>
+                    <option value="Lohaghat">Lohaghat</option>
+                    <option value="Munsiyari">Munsiyari</option>
+                    <option value="Mussoorie">Mussoorie</option>
+                    <option value="Nainital">Nainital</option>
+                    <option value="Nandprayag">Nandprayag</option>
+                    <option value="Narendra Nagar">Narendra Nagar</option>
+                    <option value="New Tehri">New Tehri</option>
+                    <option value="Pauri">Pauri</option>
+                    <option value="Pithoragarh">Pithoragarh</option>
+                    <option value="Ramnagar">Ramnagar</option>
+                    <option value="Ranikhet">Ranikhet</option>
+                    <option value="Rishikesh">Rishikesh</option>
+                    <option value="Roorkee">Roorkee</option>
+                    <option value="Rudraprayag">Rudraprayag</option>
+                    <option value="Rudrapur">Rudrapur</option>
+                    <option value="Sitarganj">Sitarganj</option>
+                    <option value="Someshwar">Someshwar</option>
+                    <option value="Srinagar">Srinagar</option>
+                    <option value="Tanakpur">Tanakpur</option>
+                    <option value="Tehri Garhwal">Tehri Garhwal</option>
+                    <option value="Ukhimath">Ukhimath</option>
+                    <option value="Uttarkashi">Uttarkashi</option>
+                    <option value="Vikasnagar">Vikasnagar</option>
                 </select>
             </div>
             <div class="input-group">
