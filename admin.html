@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | PahadiRide</title>
+    <title>Admin Panel | ZipHill</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -33,7 +33,7 @@
 
     <nav class="navbar">
         <div class="logo">
-            <a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a>
+            <a href="index.html" style="text-decoration:none;color:inherit;">Zip<span>Hill</span></a>
             <span style="font-size:0.75rem;background:#ef4444;color:white;padding:2px 8px;border-radius:4px;margin-left:8px;">ADMIN</span>
         </div>
         <div class="nav-links">
@@ -182,7 +182,7 @@
                         <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">RC: ${driver.rc_number || '—'}</div>
                     </div>
                     <div class="driver-row-actions">
-                        <a class="btn-wa" href="https://wa.me/91${driver.phone}?text=Hi ${encodeURIComponent(driver.name||'')}, please send your RC document photo for verification on PahadiRide." target="_blank">
+                        <a class="btn-wa" href="https://wa.me/91${driver.phone}?text=Hi ${encodeURIComponent(driver.name||'')}, please send your RC document photo for verification on ZipHill." target="_blank">
                             <i class="fa-brands fa-whatsapp"></i> Request RC
                         </a>
                         <button class="btn-verify" onclick="setVerified('${driver.phone}', true)">
