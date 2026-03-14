@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function() {
         banner.style.cssText = "position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: white; padding: 1rem; text-align: center; z-index: 9999; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1); font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between; gap: 10px;";
         
         let instructionText = isIOS 
-            ? `Install PahadiRide: Tap the <strong>Share</strong> icon below, then <strong>"Add to Home Screen"</strong>`
-            : `Install PahadiRide: Tap the <strong>3 dots</strong> <i class="fa-solid fa-ellipsis-vertical"></i> top right, then <strong>"Add to Home screen"</strong>`;
+            ? `Install ZipHill: Tap the <strong>Share</strong> icon below, then <strong>"Add to Home Screen"</strong>`
+            : `Install ZipHill: Tap the <strong>3 dots</strong> <i class="fa-solid fa-ellipsis-vertical"></i> top right, then <strong>"Add to Home screen"</strong>`;
         
         banner.innerHTML = `
             <div style="text-align: left; line-height: 1.4;">${instructionText}</div>
@@ -41,8 +41,8 @@ document.addEventListener("DOMContentLoaded", function() {
 // 2. GLOBAL NAVBAR & AUTHENTICATION (LOOP FIXED)
 // ==========================================
 document.addEventListener("DOMContentLoaded", function() {
-    const loggedInPhone = localStorage.getItem('pahadiRideUser');
-    const loggedInPass = localStorage.getItem('pahadiRidePass'); 
+    const loggedInPhone = localStorage.getItem('zipHillUser');
+    const loggedInPass = localStorage.getItem('zipHillPass'); 
     const navBtn = document.querySelector('.navbar .sign-in-btn'); 
     
     if (navBtn) {
@@ -174,7 +174,7 @@ async function filterAndDisplayResults(fromLocation, toLocation) {
                 actionButtons = `<button class="btn-whatsapp" style="background-color: #0ea5e9; width: 100%; border: none; padding: 0.75rem; border-radius: 0.5rem; color: white; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem;" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I want to book your ${driver.vehicle} for a trip.', '_blank')"><i class="fa-solid fa-car"></i> Book Whole Car</button>`;
             } else {
                 priceDisplay = `<span class="amount">₹${driver.price || '0'}</span> / seat`;
-                actionButtons = `<div style="display: flex; gap: 0.5rem;"><button class="btn-whatsapp" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I found your ride on PahadiRide.', '_blank')"><i class="fa-brands fa-whatsapp"></i> Chat</button><button class="btn-call" onclick="window.location.href='tel:+91${driver.phone}'"><i class="fa-solid fa-phone"></i> Call</button></div>`;
+                actionButtons = `<div style="display: flex; gap: 0.5rem;"><button class="btn-whatsapp" onclick="window.open('https://wa.me/91${driver.phone}?text=Hi ${driver.name}, I found your ride on ZipHill.', '_blank')"><i class="fa-brands fa-whatsapp"></i> Chat</button><button class="btn-call" onclick="window.location.href='tel:+91${driver.phone}'"><i class="fa-solid fa-phone"></i> Call</button></div>`;
             }
 
             grid.innerHTML += `
@@ -285,8 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 if (data.found) {
-                    localStorage.setItem('pahadiRideUser', phone);
-                    localStorage.setItem('pahadiRidePass', pass);
+                    localStorage.setItem('zipHillUser', phone);
+                    localStorage.setItem('zipHillPass', pass);
                     window.location.href = "dashboard.html";
                 } else {
                     alert("Incorrect details!");
@@ -316,4 +316,3 @@ document.addEventListener('DOMContentLoaded', () => {
         if(toggleBtns) toggleBtns.style.display = 'none';
     }
 });
-
