@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yatra Booking | PahadiRide</title>
+    <title>Yatra Booking | ZipHill</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
@@ -144,7 +144,7 @@
 <body>
 
 <nav class="navbar">
-    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a></div>
+    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Zip<span>Hill</span></a></div>
     <div class="nav-links">
         <a href="index.html" class="help-link">Home</a>
         <button class="sign-in-btn" onclick="window.location.href='signin.html'">Sign In</button>
@@ -221,13 +221,13 @@
 
 <footer class="footer" style="margin-top:auto;">
     <div class="footer-bottom" style="margin-top:0; padding-top:2rem;">
-        <p>&copy; 2026 PahadiRide. Made with ❤️ in Tehri Garhwal.</p>
+        <p>&copy; 2026 ZipHill. Made with ❤️ in Tehri Garhwal.</p>
     </div>
 </footer>
 
 <script src="script.js" defer></script>
 <script>
-const databaseURL = "https://script.google.com/macros/s/AKfycbzyPaN76nwkLSi6J7voX32iItepO9fUA1AzFQs5WImyxwnQqGPZXlI23WLp5lUXX0I/exec";
+const databaseURL = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
 
 function selectYatra(name, desc) {
     // Highlight selected card
@@ -262,7 +262,11 @@ async function loadYatraDrivers(yatraName) {
             grid.innerHTML = `
                 <div class="empty-state">
                     <h3>No drivers available right now</h3>
-                    <p>Please check back later or call us on WhatsApp for help.</p>
+                    <p style="margin-bottom:1rem;">No drivers have listed for yatra trips yet. Contact us directly — we will help you find one.</p>
+                    <button onclick="window.open('https://wa.me/917983447349?text=Hi%20ZipHill%2C%20I%20need%20a%20vehicle%20for%20${encodeURIComponent(yatraName)}%20yatra.%20Can%20you%20help%3F','_blank')" 
+                        style="background:#25d366;color:white;border:none;padding:0.75rem 1.5rem;border-radius:0.5rem;font-weight:700;cursor:pointer;font-size:1rem;display:inline-flex;align-items:center;gap:0.5rem;">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp Us for Help
+                    </button>
                 </div>`;
             return;
         }
@@ -277,7 +281,7 @@ async function loadYatraDrivers(yatraName) {
                 ? `<img src="${driver.photo}" alt="${driver.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
                 : `<i class="fa-solid fa-user-tie"></i>`;
 
-            const waMsg = encodeURIComponent(`Hi ${driver.name}, I found you on PahadiRide. I need a vehicle for ${yatraName}. Can you help?`);
+            const waMsg = encodeURIComponent(`Hi ${driver.name}, I found you on ZipHill. I need a vehicle for ${yatraName}. Can you help?`);
 
             innerGrid.innerHTML += `
                 <div class="driver-card">
