@@ -198,55 +198,87 @@
 
         function renderAllDrivers() {
             const query = document.getElementById('driver-search').value.toLowerCase();
-            // Deduplicate by phone
-            const seen   = new Set();
-            const unique = allDrivers.filter(d => {
-                if (seen.has(d.phone)) return false;
-                seen.add(d.phone);
-                return true;
-            });
-            const filtered = unique.filter(d =>
+
+            // Filter by search query
+            const filtered = allDrivers.filter(d =>
                 (d.name    || '').toLowerCase().includes(query) ||
                 (d.phone   || '').includes(query) ||
-                (d.vehicle || '').toLowerCase().includes(query)
+                (d.vehicle || '').toLowerCase().includes(query) ||
+                (d.rc_number || '').toLowerCase().includes(query)
             );
+
             if (filtered.length === 0) {
                 document.getElementById('drivers-list').innerHTML = '<p class="empty-state">No drivers match your search.</p>';
                 return;
             }
-            document.getElementById('drivers-list').innerHTML = filtered.map(driver => {
-                const isPending  = !driver.verified || driver.verified === false;
-                const isVerified = driver.verified === true;
+
+            // Group all vehicles by phone
+            const grouped = {};
+            filtered.forEach(d => {
+                if (!grouped[d.phone]) grouped[d.phone] = [];
+                grouped[d.phone].push(d);
+            });
+
+            document.getElementById('drivers-list').innerHTML = Object.values(grouped).map(vehicles => {
+                const driver     = vehicles[0]; // use first row for driver info
+                const isOnline   = driver.status !== 'offline';
+
                 return `
-                <div class="driver-row">
-                    <div class="driver-row-info">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
-                            <strong>${driver.name || 'Unknown'}</strong>
-                            ${isVerified  ? '<span class="badge-v"><i class="fa-solid fa-circle-check"></i> Verified</span>' : ''}
-                            ${isPending   ? '<span class="badge-p"><i class="fa-solid fa-clock"></i> Pending</span>'        : ''}
-                            ${driver.status === 'offline'
-                                ? '<span style="background:#f1f5f9;color:#94a3b8;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Offline</span>'
-                                : '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Online</span>'}
+                <div class="driver-row" style="flex-direction:column;align-items:stretch;">
+                    <!-- Driver header -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                            <strong style="font-size:1rem;">${driver.name || 'Unknown'}</strong>
+                            ${isOnline
+                                ? '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Online</span>'
+                                : '<span style="background:#f1f5f9;color:#94a3b8;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Offline</span>'}
                         </div>
                         <div style="font-size:0.82rem;color:#64748b;">
                             <i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${driver.phone || '—'}
-                            &nbsp;·&nbsp;
-                            <i class="fa-solid fa-car" style="width:14px;"></i> ${driver.vehicle || '—'}
                         </div>
-                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">
-                            RC: ${driver.rc_number || '—'} &nbsp;·&nbsp; Route: ${driver.from || '—'} → ${driver.to || '—'}
-                        </div>
-                    </div>
-                    <div class="driver-row-actions">
-                        ${isVerified
-                            ? `<button class="btn-unverify" onclick="setVerified('${driver.phone}', false)"><i class="fa-solid fa-xmark"></i> Unverify</button>`
-                            : `<button class="btn-verify"   onclick="setVerified('${driver.phone}', true)"><i class="fa-solid fa-check"></i> Verify</button>`}
-                        <button class="btn-delete" onclick="deleteDriver('${driver.phone}','${(driver.name||'').replace(/'/g,'')}')">
-                            <i class="fa-solid fa-trash"></i> Remove
+                        <button class="btn-delete" style="margin-left:auto;" onclick="deleteDriver('${driver.phone}','${(driver.name||'').replace(/'/g,'')}')">
+                            <i class="fa-solid fa-trash"></i> Remove Driver
                         </button>
                     </div>
+
+                    <!-- Each vehicle as a sub-row -->
+                    ${vehicles.map(v => {
+                        const isPending  = !v.verified || v.verified === false;
+                        const isVerified = v.verified === true;
+                        return `
+                        <div style="background:${isPending ? '#fffbeb' : '#f0fdf4'};border:1px solid ${isPending ? '#fcd34d' : '#86efac'};border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                            <div>
+                                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
+                                    <i class="fa-solid fa-car" style="color:#2563eb;"></i>
+                                    <strong style="font-size:0.9rem;">${v.vehicle || '—'}</strong>
+                                    ${isVerified ? '<span class="badge-v"><i class="fa-solid fa-circle-check"></i> Verified</span>' : '<span class="badge-p"><i class="fa-solid fa-clock"></i> Pending</span>'}
+                                </div>
+                                <div style="font-size:0.78rem;color:#64748b;">
+                                    RC: ${v.rc_number || '—'} &nbsp;·&nbsp; Route: ${v.from || '—'} → ${v.to || '—'} &nbsp;·&nbsp; ${v.trip_type || '—'}
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                ${isVerified
+                                    ? `<button class="btn-unverify" onclick="setVerifiedRC('${v.phone}','${v.rc_number}',false)"><i class="fa-solid fa-xmark"></i> Unverify</button>`
+                                    : `<button class="btn-verify" onclick="setVerifiedRC('${v.phone}','${v.rc_number}',true)"><i class="fa-solid fa-check"></i> Verify</button>`}
+                            </div>
+                        </div>`;
+                    }).join('')}
                 </div>`;
             }).join('');
+        }
+
+        async function setVerifiedRC(phone, rc_number, isVerified) {
+            try {
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
+                    action: "setVerifiedRC", phone, rc_number, verified: isVerified
+                })});
+                allDrivers.forEach(d => { if (d.phone === phone && d.rc_number === rc_number) d.verified = isVerified; });
+                renderStats();
+                renderAllDrivers();
+                if (isVerified) alert(`✅ Vehicle ${rc_number} verified and is now LIVE!`);
+                else alert(`Vehicle ${rc_number} unverified.`);
+            } catch(e) { alert('Error. Try again.'); }
         }
 
         async function setVerified(phone, isVerified) {
