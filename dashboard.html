@@ -3,632 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Manager | PahadiRide</title>
+    <title>Admin Panel | ZipHill</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .dashboard-header { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; padding:10px; }
-        .driver-info-box  { display:flex; align-items:center; gap:15px; }
-        .fleet-title      { margin:20px 0 10px 0; font-size:1.2rem; display:flex; align-items:center; gap:8px; }
-        .quick-add-btn    { width:fit-content; padding:10px 20px; background:#10b981; border-radius:8px; font-weight:600; font-size:0.9rem; }
-
-        /* Pending verification banner */
-        .pending-banner { background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1.5px solid #f59e0b; border-radius:14px; padding:1.2rem 1.4rem; margin-bottom:16px; }
-        .pending-banner h4 { margin:0 0 0.4rem 0; color:#92400e; font-size:1rem; display:flex; align-items:center; gap:8px; }
-        .pending-banner p  { margin:0 0 0.9rem 0; color:#78350f; font-size:0.85rem; line-height:1.5; }
-        .pending-steps { display:flex; flex-direction:column; gap:6px; margin-bottom:0.9rem; }
-        .pending-step  { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:#78350f; }
-        .pending-step i { width:18px; }
-
-        /* Online/offline toggle */
-        .status-bar   { display:flex; align-items:center; justify-content:space-between; background:white; border-radius:12px; padding:12px 16px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
-        .status-label { font-size:0.9rem; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:8px; }
-        .status-dot   { width:10px; height:10px; border-radius:50%; display:inline-block; }
-        .status-dot.online  { background:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,0.2); }
-        .status-dot.offline { background:#94a3b8; }
-        .toggle-switch { position:relative; width:52px; height:28px; }
-        .toggle-switch input { opacity:0; width:0; height:0; }
-        .toggle-slider { position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:34px; transition:0.3s; }
-        .toggle-slider:before { position:absolute; content:""; height:20px; width:20px; left:4px; bottom:4px; background:white; border-radius:50%; transition:0.3s; }
-        input:checked + .toggle-slider { background:#10b981; }
-        input:checked + .toggle-slider:before { transform:translateX(24px); }
+        .stat-card   { background:white; border-radius:12px; padding:20px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+        .stat-num    { font-size:2.5rem; font-weight:800; }
+        .stat-label  { font-size:0.85rem; color:#64748b; margin-top:4px; }
+        .driver-row  { background:white; border-radius:10px; padding:14px 16px; margin-bottom:10px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06); flex-wrap:wrap; }
+        .driver-row.pending-row { border-left:4px solid #f59e0b; background:#fffbeb; }
+        .driver-row-info    { flex:1; min-width:180px; }
+        .driver-row-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+        .btn-verify   { padding:7px 14px; background:#dbeafe; color:#2563eb; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; }
+        .btn-unverify { padding:7px 14px; background:#fef9c3; color:#ca8a04; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; }
+        .btn-delete   { padding:7px 14px; background:#fee2e2; color:#ef4444; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; }
+        .btn-wa       { padding:7px 14px; background:#dcfce7; color:#16a34a; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+        .badge-v      { background:#dcfce7; color:#16a34a; font-size:0.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
+        .badge-p      { background:#fef3c7; color:#92400e; font-size:0.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
+        .badge-uv     { background:#f1f5f9; color:#64748b;  font-size:0.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
+        #login-screen { max-width:360px; margin:80px auto; background:white; border-radius:16px; padding:2rem; box-shadow:0 4px 24px rgba(0,0,0,0.1); }
+        .search-bar   { width:100%; padding:10px 14px; border:2px solid #e2e8f0; border-radius:8px; font-size:0.95rem; margin-bottom:16px; outline:none; }
+        .search-bar:focus { border-color:#2563eb; }
+        .section-title { font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px; margin:0 0 12px 0; }
+        .pending-section { background:#fffbeb; border:1.5px solid #f59e0b; border-radius:12px; padding:16px; margin-bottom:24px; }
+        .empty-state { text-align:center; padding:2rem; color:#94a3b8; font-size:0.9rem; }
     </style>
 </head>
 <body class="bg-gray">
 
-    <nav class="navbar dashboard-nav">
-        <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a></div>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html" style="text-decoration:none;color:inherit;">Zip<span>Hill</span></a>
+            <span style="font-size:0.75rem;background:#ef4444;color:white;padding:2px 8px;border-radius:4px;margin-left:8px;">ADMIN</span>
+        </div>
         <div class="nav-links">
-            <button class="sign-in-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            <button class="sign-in-btn" onclick="adminLogout()" id="logout-btn" style="display:none;">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
         </div>
     </nav>
 
-    <main class="dashboard-container">
+    <!-- LOGIN -->
+    <div id="login-screen">
+        <div style="text-align:center;margin-bottom:1.5rem;">
+            <i class="fa-solid fa-shield-halved" style="font-size:2.5rem;color:#2563eb;"></i>
+            <h2 style="margin:0.5rem 0 0.25rem 0;">Admin Access</h2>
+            <p style="color:#64748b;font-size:0.9rem;">Enter admin password to continue</p>
+        </div>
+        <div class="input-group">
+            <label>Admin Password</label>
+            <input type="password" id="admin-pass-input" placeholder="••••••••"
+                   onkeydown="if(event.key==='Enter') checkAdminLogin()">
+        </div>
+        <p id="admin-error" style="color:#ef4444;font-size:0.85rem;display:none;margin-top:8px;">
+            <i class="fa-solid fa-circle-exclamation"></i> Incorrect password.
+        </p>
+        <button onclick="checkAdminLogin()" class="proceed-btn" style="width:100%;margin-top:12px;">
+            <i class="fa-solid fa-unlock"></i> Login
+        </button>
+    </div>
 
-        <!-- Driver Info -->
-        <div class="dashboard-header">
-            <div class="driver-info-box">
-                <div class="driver-avatar"><i class="fa-solid fa-user-tie"></i></div>
-                <div>
-                    <h2 id="driver-name-display" style="margin:0;font-size:1.6rem;">Loading...</h2>
-                    <p id="driver-phone-display" style="margin:2px 0;color:#64748b;font-size:0.9rem;">+91 ...</p>
-                </div>
+    <!-- ADMIN PANEL -->
+    <main id="admin-panel" style="display:none;" class="dashboard-container">
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px;">
+            <div class="stat-card"><div class="stat-num" id="stat-total"   style="color:#2563eb;">-</div><div class="stat-label">Total Drivers</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-pending" style="color:#f59e0b;">-</div><div class="stat-label">Pending Review</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-verified" style="color:#10b981;">-</div><div class="stat-label">Verified</div></div>
+            <div class="stat-card"><div class="stat-num" id="stat-online"  style="color:#8b5cf6;">-</div><div class="stat-label">Online Now</div></div>
+        </div>
+
+        <!-- ✅ PENDING DRIVERS (top priority section) -->
+        <div class="pending-section" id="pending-section" style="display:none;">
+            <div class="section-title" style="color:#92400e;">
+                <i class="fa-solid fa-clock" style="color:#f59e0b;"></i>
+                Pending Verification
+                <span id="pending-count" style="background:#f59e0b;color:white;font-size:0.7rem;padding:2px 8px;border-radius:999px;"></span>
             </div>
-            <button onclick="openModal('add')" class="proceed-btn quick-add-btn">
-                <i class="fa-solid fa-plus"></i> Add New Vehicle
+            <p style="font-size:0.82rem;color:#78350f;margin:0 0 12px 0;">These drivers have registered but are waiting for RC verification. Review and verify to make them live.</p>
+            <div id="pending-list"></div>
+        </div>
+
+        <!-- All Drivers -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;font-size:1.1rem;"><i class="fa-solid fa-users" style="color:#2563eb;"></i> All Drivers</h3>
+            <button onclick="loadAllDrivers()" style="background:#f1f5f9;border:1px solid #e2e8f0;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.85rem;">
+                <i class="fa-solid fa-rotate"></i> Refresh
             </button>
         </div>
-
-        <!-- ✅ PENDING VERIFICATION BANNER (shown only when not verified) -->
-        <div class="pending-banner" id="pending-banner" style="display:none;">
-            <h4><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> Account Pending Verification</h4>
-            <p>Your listings are currently <strong>hidden from passengers</strong> until our team verifies your RC document. Complete the steps below to go live:</p>
-            <div class="pending-steps">
-                <div class="pending-step"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Phone number verified ✓</div>
-                <div class="pending-step"><i class="fa-solid fa-circle-xmark" style="color:#f59e0b;"></i> RC document pending admin review</div>
-            </div>
-            <button onclick="sendRCWhatsApp()" style="width:100%;background:#25d366;border:none;padding:0.75rem;border-radius:8px;color:white;font-weight:700;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;gap:8px;">
-                <i class="fa-brands fa-whatsapp"></i> Send RC Photo to Admin for Verification
-            </button>
-        </div>
-
-        <!-- Online/Offline Toggle (hidden when pending) -->
-        <div class="status-bar" id="status-bar" style="display:none;">
-            <div class="status-label">
-                <span class="status-dot" id="status-dot"></span>
-                Status: <span id="status-text" style="margin-left:4px;"></span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:0.8rem;color:#64748b;" id="toggle-hint"></span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="status-toggle" onchange="updateStatus(this.checked)">
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <h3 class="fleet-title">
-            <i class="fa-solid fa-car-side" style="color:#2563eb;"></i> Your Active Fleet
-        </h3>
-        <div id="fleet-grid" style="display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));"></div>
+        <input type="text" class="search-bar" id="driver-search" placeholder="🔍  Search by name, phone, or vehicle..." oninput="renderAllDrivers()">
+        <div id="drivers-list"></div>
 
     </main>
 
-    <!-- Vehicle Modal -->
-    <div id="vehicle-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;padding:20px;overflow-y:auto;">
-        <div class="dashboard-card" style="max-width:480px;margin:20px auto;background:white;border-radius:12px;overflow:hidden;">
-            <div class="card-header" style="background:#2563eb;color:white;padding:15px;display:flex;justify-content:space-between;">
-                <h3 id="modal-title" style="margin:0;">Vehicle Details</h3>
-                <button onclick="closeModal()" style="background:none;border:none;color:white;font-size:1.5rem;">&times;</button>
-            </div>
-            <div class="card-body" style="padding:20px;">
-                <form id="fleet-form" onsubmit="saveVehicle(event)">
-                    <div class="form-row">
-                        <div class="input-group"><label>Model</label><input type="text" id="v-model" required></div>
-                        <div class="input-group"><label>RC Number</label><input type="text" id="v-rc" maxlength="10" required style="text-transform:uppercase;"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>Trip Category</label>
-                        <select id="v-type" required onchange="adjustFields()">
-                            <option value="Sharing">Seat Sharing only (per seat price)</option>
-                            <option value="Full Vehicle">Full Car only (whole vehicle)</option>
-                            <option value="Both">Both — Seat Sharing + Full Car ⭐</option>
-                        </select>
-                        <small style="color:#64748b;font-size:0.75rem;margin-top:4px;display:block;">
-                            💡 Choose <strong>Both</strong> to appear in seat sharing search AND full car booking
-                        </small>
-                    </div>
-                    <p id="route-note" style="font-size:0.8rem;color:#475569;background:#f1f5f9;padding:8px 12px;border-radius:6px;margin-bottom:8px;display:none;"></p>
-                    <div class="form-row" id="route-row">
-                        <div class="input-group">
-                            <label>From</label>
-                            <select id="v-from" required>
-                                    <option value="Almora">Almora</option>
-                                    <option value="Augustmuni">Augustmuni</option>
-                                    <option value="Badrinath">Badrinath</option>
-                                    <option value="Bageshwar">Bageshwar</option>
-                                    <option value="Barkot">Barkot</option>
-                                    <option value="Bhimtal">Bhimtal</option>
-                                    <option value="Chamba">Chamba</option>
-                                    <option value="Champawat">Champawat</option>
-                                    <option value="Dehradun">Dehradun</option>
-                                    <option value="Delhi (NCR)">Delhi (NCR)</option>
-                                    <option value="Devprayag">Devprayag</option>
-                                    <option value="Dharchula">Dharchula</option>
-                                    <option value="Doiwala">Doiwala</option>
-                                    <option value="Gangotri">Gangotri</option>
-                                    <option value="Ghansali">Ghansali</option>
-                                    <option value="Gopeshwar">Gopeshwar</option>
-                                    <option value="Haldwani">Haldwani</option>
-                                    <option value="Haridwar">Haridwar</option>
-                                    <option value="Harsil">Harsil</option>
-                                    <option value="Jaspur">Jaspur</option>
-                                    <option value="Joshimath">Joshimath</option>
-                                    <option value="Kaladhungi">Kaladhungi</option>
-                                    <option value="Karnaprayag">Karnaprayag</option>
-                                    <option value="Kashipur">Kashipur</option>
-                                    <option value="Kedarnath">Kedarnath</option>
-                                    <option value="Khatima">Khatima</option>
-                                    <option value="Kotdwar">Kotdwar</option>
-                                    <option value="Laksar">Laksar</option>
-                                    <option value="Lansdowne">Lansdowne</option>
-                                    <option value="Lohaghat">Lohaghat</option>
-                                    <option value="Munsiyari">Munsiyari</option>
-                                    <option value="Mussoorie">Mussoorie</option>
-                                    <option value="Nainital">Nainital</option>
-                                    <option value="Nandprayag">Nandprayag</option>
-                                    <option value="Narendra Nagar">Narendra Nagar</option>
-                                    <option value="New Tehri">New Tehri</option>
-                                    <option value="Pauri">Pauri</option>
-                                    <option value="Pithoragarh">Pithoragarh</option>
-                                    <option value="Ramnagar">Ramnagar</option>
-                                    <option value="Ranikhet">Ranikhet</option>
-                                    <option value="Rishikesh">Rishikesh</option>
-                                    <option value="Roorkee">Roorkee</option>
-                                    <option value="Rudraprayag">Rudraprayag</option>
-                                    <option value="Rudrapur">Rudrapur</option>
-                                    <option value="Sitarganj">Sitarganj</option>
-                                    <option value="Someshwar">Someshwar</option>
-                                    <option value="Srinagar">Srinagar</option>
-                                    <option value="Tanakpur">Tanakpur</option>
-                                    <option value="Tehri Garhwal" selected>Tehri Garhwal</option>
-                                    <option value="Ukhimath">Ukhimath</option>
-                                    <option value="Uttarkashi">Uttarkashi</option>
-                                    <option value="Vikasnagar">Vikasnagar</option>
-                                </select>
-                        </div>
-                        <div class="input-group">
-                            <label>To</label>
-                            <select id="v-to" required>
-                                    <option value="Almora">Almora</option>
-                                    <option value="Augustmuni">Augustmuni</option>
-                                    <option value="Badrinath">Badrinath</option>
-                                    <option value="Bageshwar">Bageshwar</option>
-                                    <option value="Barkot">Barkot</option>
-                                    <option value="Bhimtal">Bhimtal</option>
-                                    <option value="Chamba">Chamba</option>
-                                    <option value="Champawat">Champawat</option>
-                                    <option value="Dehradun" selected>Dehradun</option>
-                                    <option value="Delhi (NCR)">Delhi (NCR)</option>
-                                    <option value="Devprayag">Devprayag</option>
-                                    <option value="Dharchula">Dharchula</option>
-                                    <option value="Doiwala">Doiwala</option>
-                                    <option value="Gangotri">Gangotri</option>
-                                    <option value="Ghansali">Ghansali</option>
-                                    <option value="Gopeshwar">Gopeshwar</option>
-                                    <option value="Haldwani">Haldwani</option>
-                                    <option value="Haridwar">Haridwar</option>
-                                    <option value="Harsil">Harsil</option>
-                                    <option value="Jaspur">Jaspur</option>
-                                    <option value="Joshimath">Joshimath</option>
-                                    <option value="Kaladhungi">Kaladhungi</option>
-                                    <option value="Karnaprayag">Karnaprayag</option>
-                                    <option value="Kashipur">Kashipur</option>
-                                    <option value="Kedarnath">Kedarnath</option>
-                                    <option value="Khatima">Khatima</option>
-                                    <option value="Kotdwar">Kotdwar</option>
-                                    <option value="Laksar">Laksar</option>
-                                    <option value="Lansdowne">Lansdowne</option>
-                                    <option value="Lohaghat">Lohaghat</option>
-                                    <option value="Munsiyari">Munsiyari</option>
-                                    <option value="Mussoorie">Mussoorie</option>
-                                    <option value="Nainital">Nainital</option>
-                                    <option value="Nandprayag">Nandprayag</option>
-                                    <option value="Narendra Nagar">Narendra Nagar</option>
-                                    <option value="New Tehri">New Tehri</option>
-                                    <option value="Pauri">Pauri</option>
-                                    <option value="Pithoragarh">Pithoragarh</option>
-                                    <option value="Ramnagar">Ramnagar</option>
-                                    <option value="Ranikhet">Ranikhet</option>
-                                    <option value="Rishikesh">Rishikesh</option>
-                                    <option value="Roorkee">Roorkee</option>
-                                    <option value="Rudraprayag">Rudraprayag</option>
-                                    <option value="Rudrapur">Rudrapur</option>
-                                    <option value="Sitarganj">Sitarganj</option>
-                                    <option value="Someshwar">Someshwar</option>
-                                    <option value="Srinagar">Srinagar</option>
-                                    <option value="Tanakpur">Tanakpur</option>
-                                    <option value="Tehri Garhwal">Tehri Garhwal</option>
-                                    <option value="Ukhimath">Ukhimath</option>
-                                    <option value="Uttarkashi">Uttarkashi</option>
-                                    <option value="Vikasnagar">Vikasnagar</option>
-                                </select>
-                        </div>
-                    </div>
-                    <div id="route-note" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;font-size:0.85rem;color:#1d4ed8;margin-bottom:12px;">
-                        <i class="fa-solid fa-circle-info"></i> Full car bookings are not route-specific — your vehicle will appear in the <strong>Full Car Booking</strong> page and <strong>Yatra</strong> page for all passengers.
-                    </div>
-                    <div class="form-row" id="price-row">
-                        <div class="input-group"><label>Price (₹)</label><input type="number" id="v-price" placeholder="0 = Negotiable"></div>
-                        <div class="input-group"><label>Seats Available</label><input type="number" id="v-seats" min="1" max="20"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="input-group">
-                            <label><i class="fa-regular fa-clock"></i> Departure Time</label>
-                            <input type="time" id="v-departure">
-                        </div>
-                        <div class="input-group">
-                            <label><i class="fa-regular fa-calendar"></i> Available Date</label>
-                            <input type="date" id="v-available-date" id="v-available-date">
-                        </div>
-                    </div>
-                    <div style="margin:-8px 0 12px 2px;">
-                        <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:#64748b;cursor:pointer;">
-                            <input type="checkbox" id="v-flexible" onchange="toggleFlexible(this)"> Runs daily / flexible dates
-                        </label>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fa-regular fa-image"></i> Your Photo URL <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
-                        <input type="url" id="v-photo" placeholder="https://... paste a link to your photo">
-                        <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Upload to Google Photos → Share → "Anyone with link" → paste URL here.</p>
-                    </div>
-                    <button type="submit" id="save-btn" class="proceed-btn" style="margin-top:10px;">Save Vehicle</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <script>
-        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+        // ⚠️ Change this password before deploying!
+        const ADMIN_PASSWORD = "pahadi@admin2026";
+        const databaseURL    = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
+        let allDrivers = [];
 
-        const databaseURL  = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
-        const phone        = localStorage.getItem('pahadiRideUser');
-        const pass         = localStorage.getItem('pahadiRidePass');
-        let myFleet        = [];
-        let currentStatus  = "online";
-        let isVerified     = false;
-
-        document.addEventListener('DOMContentLoaded', loadDashboard);
-
-        async function loadDashboard() {
-            if (!phone || !pass) { window.location.href = 'signin.html'; return; }
-            try {
-                const res  = await fetch(`${databaseURL}?phone=${phone}&password=${pass}`);
-                const data = await res.json();
-                if (data.found) {
-                    document.getElementById('driver-name-display').innerText  = data.name  || "Driver";
-                    document.getElementById('driver-phone-display').innerText = "+91 " + phone;
-                    myFleet       = data.fleet   || [];
-                    currentStatus = data.status  || "online";
-                    isVerified    = data.verified === true || data.verified === "TRUE";
-                    renderVerificationState();
-                    renderFleet();
-                } else {
-                    window.location.href = 'signin.html';
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        function renderVerificationState() {
-            const pendingBanner = document.getElementById('pending-banner');
-            const statusBar     = document.getElementById('status-bar');
-            if (isVerified) {
-                pendingBanner.style.display = 'none';
-                statusBar.style.display     = 'flex';
-                renderStatus();
+        function checkAdminLogin() {
+            if (document.getElementById('admin-pass-input').value === ADMIN_PASSWORD) {
+                sessionStorage.setItem('pahadiAdmin', '1');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-panel').style.display  = 'block';
+                document.getElementById('logout-btn').style.display   = 'flex';
+                loadAllDrivers();
             } else {
-                pendingBanner.style.display = 'block';
-                statusBar.style.display     = 'none';
+                document.getElementById('admin-error').style.display = 'block';
             }
         }
 
-        function renderStatus() {
-            const on  = currentStatus !== "offline";
-            document.getElementById('status-dot').className  = 'status-dot ' + (on ? 'online' : 'offline');
-            document.getElementById('status-text').innerText = on ? 'Online – Visible to passengers' : 'Offline – Hidden from search';
-            document.getElementById('status-text').style.color = on ? '#10b981' : '#94a3b8';
-            document.getElementById('status-toggle').checked = on;
-            document.getElementById('toggle-hint').innerText = on ? 'You are visible' : 'Toggle to go online';
+        function adminLogout() { sessionStorage.removeItem('pahadiAdmin'); location.reload(); }
+
+        if (sessionStorage.getItem('pahadiAdmin') === '1') {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-panel').style.display  = 'block';
+            document.getElementById('logout-btn').style.display   = 'flex';
+            loadAllDrivers();
         }
 
-        async function updateStatus(isOnline) {
-            currentStatus = isOnline ? "online" : "offline";
-            renderStatus();
+        async function loadAllDrivers() {
+            document.getElementById('drivers-list').innerHTML  = '<p class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
+            document.getElementById('pending-list').innerHTML  = '<p class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
             try {
-                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
-                    action: "updateStatus", phone, password: pass, status: currentStatus
-                })});
-            } catch (err) { console.error(err); }
+                const res  = await fetch(databaseURL + "?action=getDrivers&showAll=true");
+                allDrivers = await res.json();
+                updateStats();
+                renderPendingDrivers();
+                renderAllDrivers();
+            } catch (err) {
+                document.getElementById('drivers-list').innerHTML = '<p style="text-align:center;color:red;padding:2rem;">Failed to load. Check database connection.</p>';
+            }
         }
 
-        // ✅ WhatsApp RC submission from dashboard
-        function sendRCWhatsApp() {
-            const name    = document.getElementById('driver-name-display').innerText;
-            const vehicle = myFleet.length > 0 ? myFleet[0].vehicle : "—";
-            const rc      = myFleet.length > 0 ? myFleet[0].rc_number : "—";
-            const msg = encodeURIComponent(
-                `🚗 RC Verification Request – PahadiRide\n\nName: ${name}\nPhone: +91 ${phone}\nVehicle: ${vehicle}\nRC: ${rc}\n\nPlease verify my account. Attaching RC photo.`
-            );
-            // ⚠️ Replace with your WhatsApp number
-            window.open(`https://wa.me/917983447349?text=${msg}`, '_blank');
+        function updateStats() {
+            const pending  = allDrivers.filter(d => !d.verified || d.verified === false || d.verified === "PENDING");
+            const verified = allDrivers.filter(d => d.verified === true);
+            const online   = allDrivers.filter(d => d.status !== 'offline');
+            // Deduplicate by phone for total count
+            const unique   = [...new Set(allDrivers.map(d => d.phone))];
+            document.getElementById('stat-total').textContent    = unique.length;
+            document.getElementById('stat-pending').textContent  = [...new Set(pending.map(d=>d.phone))].length;
+            document.getElementById('stat-verified').textContent = [...new Set(verified.map(d=>d.phone))].length;
+            document.getElementById('stat-online').textContent   = [...new Set(online.map(d=>d.phone))].length;
         }
 
-        function renderFleet() {
-            const grid = document.getElementById('fleet-grid');
-            if (myFleet.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2.5rem;background:white;border-radius:1rem;">
-                    <i class="fa-solid fa-car" style="font-size:2.5rem;color:#cbd5e1;display:block;margin-bottom:1rem;"></i>
-                    <p style="color:#64748b;">No vehicles listed yet.<br>Click <strong>Add New Vehicle</strong> to get started.</p>
-                </div>`;
+        function renderPendingDrivers() {
+            const pendingDrivers = allDrivers.filter(d => !d.verified || d.verified === false);
+            // Deduplicate by phone
+            const seen = new Set();
+            const unique = pendingDrivers.filter(d => { if (seen.has(d.phone)) return false; seen.add(d.phone); return true; });
+
+            const section = document.getElementById('pending-section');
+            const list    = document.getElementById('pending-list');
+            const count   = document.getElementById('pending-count');
+
+            if (unique.length === 0) {
+                section.style.display = 'none';
                 return;
             }
-            grid.innerHTML = myFleet.map((car, i) => {
-                const verifiedTag = isVerified
-                    ? '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;"><i class="fa-solid fa-circle-check"></i> Live</span>'
-                    : '<span style="background:#fef3c7;color:#92400e;font-size:0.7rem;padding:2px 8px;border-radius:999px;"><i class="fa-solid fa-clock"></i> Pending</span>';
+            section.style.display = 'block';
+            count.textContent     = unique.length + ' waiting';
+
+            list.innerHTML = unique.map(driver => `
+                <div class="driver-row pending-row">
+                    <div class="driver-row-info">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                            <strong>${driver.name || 'Unknown'}</strong>
+                            <span class="badge-p"><i class="fa-solid fa-clock"></i> Pending</span>
+                        </div>
+                        <div style="font-size:0.82rem;color:#64748b;">
+                            <i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${driver.phone || '—'}
+                            &nbsp;·&nbsp;
+                            <i class="fa-solid fa-car" style="width:14px;"></i> ${driver.vehicle || '—'}
+                        </div>
+                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">RC: ${driver.rc_number || '—'}</div>
+                    </div>
+                    <div class="driver-row-actions">
+                        <a class="btn-wa" href="https://wa.me/91${driver.phone}?text=Hi ${encodeURIComponent(driver.name||'')}, please send your RC document photo for verification on ZipHill." target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i> Request RC
+                        </a>
+                        <button class="btn-verify" onclick="setVerified('${driver.phone}', true)">
+                            <i class="fa-solid fa-check"></i> Verify & Go Live
+                        </button>
+                        <button class="btn-delete" onclick="deleteDriver('${driver.phone}','${(driver.name||'').replace(/'/g,'')}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAllDrivers() {
+            const query = document.getElementById('driver-search').value.toLowerCase();
+            // Deduplicate by phone
+            const seen   = new Set();
+            const unique = allDrivers.filter(d => {
+                if (seen.has(d.phone)) return false;
+                seen.add(d.phone);
+                return true;
+            });
+            const filtered = unique.filter(d =>
+                (d.name    || '').toLowerCase().includes(query) ||
+                (d.phone   || '').includes(query) ||
+                (d.vehicle || '').toLowerCase().includes(query)
+            );
+            if (filtered.length === 0) {
+                document.getElementById('drivers-list').innerHTML = '<p class="empty-state">No drivers match your search.</p>';
+                return;
+            }
+            document.getElementById('drivers-list').innerHTML = filtered.map(driver => {
+                const isPending  = !driver.verified || driver.verified === false;
+                const isVerified = driver.verified === true;
                 return `
-                <div class="dashboard-card" style="border-left:4px solid ${car.trip_type === 'Full Vehicle' ? '#ef4444' : car.trip_type === 'Both' ? '#7c3aed' : '#3b82f6'};padding:15px;">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-                        <div>
-                            <h4 style="margin:0 0 2px 0;">${car.vehicle}</h4>
-                            <p style="font-size:0.8rem;color:#64748b;margin:0;">${car.rc_number}</p>
+                <div class="driver-row">
+                    <div class="driver-row-info">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                            <strong>${driver.name || 'Unknown'}</strong>
+                            ${isVerified  ? '<span class="badge-v"><i class="fa-solid fa-circle-check"></i> Verified</span>' : ''}
+                            ${isPending   ? '<span class="badge-p"><i class="fa-solid fa-clock"></i> Pending</span>'        : ''}
+                            ${driver.status === 'offline'
+                                ? '<span style="background:#f1f5f9;color:#94a3b8;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Offline</span>'
+                                : '<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;">Online</span>'}
                         </div>
-                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-                            <span style="font-size:0.7rem;background:#f1f5f9;padding:2px 8px;border-radius:4px;">${car.trip_type}</span>
-                            ${verifiedTag}
+                        <div style="font-size:0.82rem;color:#64748b;">
+                            <i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${driver.phone || '—'}
+                            &nbsp;·&nbsp;
+                            <i class="fa-solid fa-car" style="width:14px;"></i> ${driver.vehicle || '—'}
                         </div>
-                    </div>
-                    <div style="font-size:0.82rem;color:#475569;margin-bottom:10px;">
-                        <div>${car.from === 'Anywhere' ? 'All Uttarakhand' : car.from} → ${car.to === 'Anywhere' ? 'Any Destination' : car.to}</div>
-                        ${car.departure ? `<div><i class="fa-regular fa-clock" style="color:#2563eb;width:14px;"></i> ${car.departure}</div>` : ''}
-                        ${car.available_date ? `<div><i class="fa-regular fa-calendar" style="color:#2563eb;width:14px;"></i> ${car.available_date === 'Flexible' ? 'Daily / Flexible' : car.available_date}</div>` : ''}
-                    </div>
-                    <div style="margin-bottom:10px;">
-                        <div style="font-size:0.78rem;color:#64748b;margin-bottom:4px;"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Block unavailable dates:</div>
-                        <div id="blocked-tags-${car.rc_number}" style="display:flex;flex-wrap:wrap;gap:4px;min-height:20px;">
-                            ${(car.blocked_dates && car.blocked_dates !== 'none')
-                                ? car.blocked_dates.split(',').filter(Boolean)
-                                    .filter(d => d >= new Date().toISOString().split('T')[0]) // auto-remove past dates
-                                    .map(d => 
-                                    `<span style="background:#fee2e2;color:#ef4444;font-size:0.72rem;padding:2px 8px;border-radius:99px;display:flex;align-items:center;gap:4px;">
-                                        ${d} <span onclick="removeBlockedDate('${car.rc_number}','${d}')" style="cursor:pointer;font-weight:bold;">×</span>
-                                    </span>`
-                                  ).join('') || '<span style="color:#94a3b8;font-size:0.75rem;">None — fully available</span>'
-                                : '<span style="color:#94a3b8;font-size:0.75rem;">None — fully available</span>'}
+                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">
+                            RC: ${driver.rc_number || '—'} &nbsp;·&nbsp; Route: ${driver.from || '—'} → ${driver.to || '—'}
                         </div>
                     </div>
-                    <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:8px;margin-bottom:10px;">
-                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:6px;"><i class="fa-solid fa-calendar-xmark" style="color:#ef4444;"></i> Block dates when unavailable:</div>
-                        
-                        <!-- Selected dates preview -->
-                        <div id="pending-tags-${car.rc_number}" style="display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-bottom:6px;"></div>
-
-                        <!-- Date picker row -->
-                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px;">
-                            <input type="date" id="block-pick-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}" 
-                                style="flex:1;min-width:140px;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
-                            <button onclick="addToQueue('${car.rc_number}')" 
-                                style="padding:6px 10px;background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
-                                + Add Date
-                            </button>
-                            <button onclick="saveBlockedDates('${car.rc_number}')" 
-                                style="padding:6px 12px;background:#ef4444;color:white;border:none;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
-                                <i class="fa-solid fa-ban"></i> Block All
-                            </button>
-                        </div>
-
-                        <!-- Range option -->
-                        <details style="margin-top:4px;">
-                            <summary style="font-size:0.72rem;color:#94a3b8;cursor:pointer;">+ Also block a date range (e.g. 15–20 March)</summary>
-                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px;">
-                                <input type="date" id="block-from-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}"
-                                    style="flex:1;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
-                                <span style="color:#64748b;font-size:0.8rem;">to</span>
-                                <input type="date" id="block-to-${car.rc_number}" min="${new Date().toISOString().split('T')[0]}"
-                                    style="flex:1;padding:6px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.82rem;">
-                                <button onclick="addRangeToQueue('${car.rc_number}')"
-                                    style="padding:6px 10px;background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;border-radius:4px;font-size:0.8rem;cursor:pointer;white-space:nowrap;">
-                                    + Add Range
-                                </button>
-                            </div>
-                        </details>
-                    </div>
-                    <div style="display:flex;gap:8px;">
-                        <button onclick="openModal('edit',${i})" style="flex:1;padding:7px;font-size:0.8rem;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;background:white;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                        <button onclick="removeCar('${car.rc_number}')" style="flex:1;padding:7px;font-size:0.8rem;background:#fee2e2;color:#ef4444;border:none;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i> Remove</button>
+                    <div class="driver-row-actions">
+                        ${isVerified
+                            ? `<button class="btn-unverify" onclick="setVerified('${driver.phone}', false)"><i class="fa-solid fa-xmark"></i> Unverify</button>`
+                            : `<button class="btn-verify"   onclick="setVerified('${driver.phone}', true)"><i class="fa-solid fa-check"></i> Verify</button>`}
+                        <button class="btn-delete" onclick="deleteDriver('${driver.phone}','${(driver.name||'').replace(/'/g,'')}')">
+                            <i class="fa-solid fa-trash"></i> Remove
+                        </button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        function openModal(mode, index = null) {
-            document.getElementById('vehicle-modal').style.display = 'block';
-            document.getElementById('fleet-form').reset();
-            document.getElementById('v-rc').style.border = '';
-            document.getElementById('v-available-date').disabled = false;
-            // Set min date to today so driver cant pick past dates
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('v-available-date').min = today;
-            // Reset route row visibility
-            adjustFields();
-            if (mode === 'edit' && index !== null) {
-                const c = myFleet[index];
-                document.getElementById('v-model').value     = c.vehicle    || '';
-                document.getElementById('v-rc').value        = c.rc_number  || '';
-                document.getElementById('v-type').value      = c.trip_type  || 'Sharing';
-                document.getElementById('v-from').value      = c.from       || 'Tehri Garhwal';
-                document.getElementById('v-to').value        = c.to         || 'Dehradun';
-                document.getElementById('v-price').value     = c.price      || '';
-                document.getElementById('v-seats').value     = c.seats      || '';
-                document.getElementById('v-photo').value     = c.photo      || '';
-                document.getElementById('v-departure').value = c.departure  || '';
-                const flex = !c.available_date || c.available_date === 'Flexible';
-                document.getElementById('v-flexible').checked          = flex;
-                document.getElementById('v-available-date').value      = flex ? '' : c.available_date;
-                document.getElementById('v-available-date').disabled   = flex;
-            }
-        }
-
-        function closeModal()  { document.getElementById('vehicle-modal').style.display = 'none'; }
-        function adjustFields() {
-            const type = document.getElementById('v-type').value;
-            const routeRow = document.getElementById('route-row');
-            const priceRow = document.getElementById('price-row');
-            const routeNote = document.getElementById('route-note');
-
-            if (type === "Full Vehicle") {
-                // Full car — no specific route needed, hide route selector
-                document.getElementById('v-from').value = "Anywhere";
-                document.getElementById('v-to').value   = "Anywhere";
-                if (routeRow) routeRow.style.display = 'none';
-                if (routeNote) routeNote.style.display = 'none';
-                if (priceRow) priceRow.querySelector('label').textContent = 'Price (₹ — leave 0 for negotiable)';
-            } else if (type === "Sharing") {
-                // Sharing only — show route, explain it only shows in seat sharing search
-                if (routeRow) routeRow.style.display = '';
-                if (routeNote) { routeNote.style.display = 'block'; routeNote.innerHTML = '📍 This route is for <strong>seat sharing only</strong>. Passengers searching this route will see your car.'; }
-                if (priceRow) priceRow.querySelector('label').textContent = 'Price per Seat (₹)';
-            } else {
-                // Both — show route, appears in both
-                if (routeRow) routeRow.style.display = '';
-                if (routeNote) { routeNote.style.display = 'block'; routeNote.innerHTML = '📍 Set your <strong>main route</strong> for seat sharing. You will also appear in full car bookings for any route.'; }
-                if (priceRow) priceRow.querySelector('label').textContent = 'Price per Seat (₹)';
-            }
-        }
-        function toggleFlexible(cb) {
-            document.getElementById('v-available-date').disabled = cb.checked;
-            if (cb.checked) document.getElementById('v-available-date').value = '';
-        }
-
-        async function saveVehicle(event) {
-            event.preventDefault();
-            const rcInput = document.getElementById('v-rc').value.toUpperCase().replace(/\s/g,'');
-            if (!/^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/.test(rcInput)) {
-                alert("Invalid RC Number! Format: UK07AB1234");
-                document.getElementById('v-rc').style.border = "2px solid #ef4444";
-                return;
-            }
-            const isFlexible = document.getElementById('v-flexible').checked;
-            const depRaw     = document.getElementById('v-departure').value;
-            let dep = depRaw;
-            if (depRaw) {
-                const [h, m] = depRaw.split(':').map(Number);
-                dep = `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
-            }
-            const btn = document.getElementById('save-btn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-            btn.disabled  = true;
+        async function setVerified(phone, isVerified) {
             try {
                 await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
-                    action: "updateTrip", phone, password: pass,
-                    name:           document.getElementById('driver-name-display').innerText,
-                    vehicle:        document.getElementById('v-model').value,
-                    rc_number:      rcInput,
-                    from:           document.getElementById('v-from').value || "Anywhere",
-                    to:             document.getElementById('v-to').value   || "Anywhere",
-                    price:          document.getElementById('v-price').value  || "0",
-                    seats:          document.getElementById('v-seats').value  || "4",
-                    trip_type:      document.getElementById('v-type').value,
-                    departure:      dep || "Flexible",
-                    available_date: isFlexible ? "Flexible" : (document.getElementById('v-available-date').value || "Flexible"),
-                    photo:          document.getElementById('v-photo').value || ""
+                    action: "setVerified", phone, verified: isVerified
                 })});
-                alert("✅ Vehicle listing updated!");
-                location.reload();
-            } catch (err) {
-                alert("❌ Connection Error.");
-                btn.disabled  = false;
-                btn.innerHTML = "Save Vehicle";
-            }
+                // Update locally
+                allDrivers.forEach(d => { if (d.phone === phone) d.verified = isVerified; });
+                updateStats();
+                renderPendingDrivers();
+                renderAllDrivers();
+                if (isVerified) alert(`✅ Driver verified and is now LIVE on the app!`);
+            } catch (err) { alert("Failed to update. Check connection."); }
         }
 
-        async function removeCar(rc) {
-            if (!confirm(`Remove vehicle ${rc} from your fleet?`)) return;
+        async function deleteDriver(phone, name) {
+            if (!confirm(`Permanently remove driver "${name}" (+91 ${phone})?\n\nThis cannot be undone.`)) return;
             try {
-                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:"deleteVehicle", phone, rc_number:rc })});
-                alert("Vehicle removed.");
-                location.reload();
-            } catch (err) { alert("Failed. Check connection."); }
-        }
-
-        // Queue of dates to block (before saving)
-        const blockQueue = {};
-
-        function addToQueue(rc) {
-            const input = document.getElementById('block-pick-' + rc);
-            const date  = input.value;
-            if (!date) { alert('Please pick a date first.'); return; }
-            if (!blockQueue[rc]) blockQueue[rc] = [];
-            if (blockQueue[rc].includes(date)) { alert('Already added.'); return; }
-            blockQueue[rc].push(date);
-            input.value = '';
-            renderQueue(rc);
-        }
-
-        function addRangeToQueue(rc) {
-            const from = document.getElementById('block-from-' + rc).value;
-            const to   = document.getElementById('block-to-'   + rc).value;
-            if (!from || !to) { alert('Please pick both From and To dates.'); return; }
-            if (to < from)    { alert('To date must be after From date.'); return; }
-            if (!blockQueue[rc]) blockQueue[rc] = [];
-            let cursor = new Date(from);
-            const end  = new Date(to);
-            let added  = 0;
-            while (cursor <= end) {
-                const d = cursor.toISOString().split('T')[0];
-                if (!blockQueue[rc].includes(d)) { blockQueue[rc].push(d); added++; }
-                cursor.setDate(cursor.getDate() + 1);
-            }
-            document.getElementById('block-from-' + rc).value = '';
-            document.getElementById('block-to-'   + rc).value = '';
-            alert(added + ' dates added to queue. Click "Block All" to save.');
-            renderQueue(rc);
-        }
-
-        function renderQueue(rc) {
-            const container = document.getElementById('pending-tags-' + rc);
-            if (!container) return;
-            if (!blockQueue[rc] || blockQueue[rc].length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-            container.innerHTML = blockQueue[rc].sort().map(d =>
-                `<span style="background:#fef3c7;color:#92400e;font-size:0.72rem;padding:2px 8px;border-radius:99px;display:flex;align-items:center;gap:4px;">
-                    ${d} <span onclick="removeFromQueue('${rc}','${d}')" style="cursor:pointer;font-weight:bold;">×</span>
-                </span>`
-            ).join('') + `<span style="font-size:0.7rem;color:#64748b;align-self:center;"> ← click Block All to save</span>`;
-        }
-
-        function removeFromQueue(rc, date) {
-            if (!blockQueue[rc]) return;
-            blockQueue[rc] = blockQueue[rc].filter(d => d !== date);
-            renderQueue(rc);
-        }
-
-        async function saveBlockedDates(rc) {
-            const queue = blockQueue[rc] || [];
-            if (queue.length === 0) { alert('No dates added to block. Use "+ Add Date" first.'); return; }
-            const car = myFleet.find(c => c.rc_number === rc);
-            const existing = (car && car.blocked_dates && car.blocked_dates !== 'none')
-                ? car.blocked_dates.split(',').filter(Boolean) : [];
-            const allBlocked = [...new Set([...existing, ...queue])].join(',');
-            try {
-                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
-                    action: 'updateBlockedDates',
-                    phone, rc_number: rc,
-                    blocked_dates: allBlocked
-                })});
-                alert('✅ ' + queue.length + ' date(s) blocked successfully!');
-                location.reload();
-            } catch(e) { alert('Connection error.'); }
-        }
-
-        async function removeBlockedDate(rc, date) {
-            if (!confirm('Remove block for ' + date + '?')) return;
-            const car = myFleet.find(c => c.rc_number === rc);
-            const current = (car && car.blocked_dates && car.blocked_dates !== 'none') ? car.blocked_dates.split(',').filter(Boolean) : [];
-            const newBlocked = current.filter(d => d !== date).join(',') || 'none';
-            try {
-                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({
-                    action: 'updateBlockedDates',
-                    phone, rc_number: rc,
-                    blocked_dates: newBlocked
-                })});
-                alert('✅ Date unblocked: ' + date);
-                location.reload();
-            } catch(e) { alert('Connection error.'); }
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:"deleteDriver", phone })});
+                allDrivers = allDrivers.filter(d => d.phone !== phone);
+                updateStats();
+                renderPendingDrivers();
+                renderAllDrivers();
+            } catch (err) { alert("Failed to delete. Check connection."); }
         }
     </script>
 </body>
 </html>
-
