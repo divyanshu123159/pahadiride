@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Registration | PahadiRide</title>
+    <title>Driver Registration | ZipHill</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
@@ -26,7 +26,7 @@
 <body class="bg-gray">
 
 <nav class="navbar">
-    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Pahadi<span>Ride</span></a></div>
+    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Zip<span>Hill</span></a></div>
     <div class="nav-links">
         <a href="index.html" class="help-link"><i class="fa-solid fa-arrow-left"></i> Back</a>
     </div>
@@ -133,7 +133,7 @@
 const databaseURL = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
 let registeredData = {};
 
-if (localStorage.getItem('pahadiRideUser') && localStorage.getItem('pahadiRidePass')) {
+if (localStorage.getItem('zipHillUser') && localStorage.getItem('zipHillPass')) {
     window.location.href = 'dashboard.html';
 }
 
@@ -166,8 +166,8 @@ async function submitDetails(event) {
         });
 
         registeredData = { name, phone, rc, vehicle };
-        localStorage.setItem('pahadiRideUser', phone);
-        localStorage.setItem('pahadiRidePass',  password);
+        localStorage.setItem('zipHillUser', phone);
+        localStorage.setItem('zipHillPass',  password);
 
         // Move to step 2
         document.getElementById('step1').classList.remove('active');
@@ -189,7 +189,7 @@ async function submitDetails(event) {
 
 function sendRC() {
     const { name, phone, rc, vehicle } = registeredData;
-    const msg = encodeURIComponent(`Hi PahadiRide Admin, I just registered and need RC verification.\n\nName: ${name}\nPhone: ${phone}\nVehicle: ${vehicle}\nRC: ${rc}\n\n[Attaching RC photo]`);
+    const msg = encodeURIComponent(`Hi ZipHill Admin, I just registered and need RC verification.\n\nName: ${name}\nPhone: ${phone}\nVehicle: ${vehicle}\nRC: ${rc}\n\n[Attaching RC photo]`);
     window.open('https://wa.me/917983447349?text=' + msg, '_blank');
 }
 </script>
