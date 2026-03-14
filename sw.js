@@ -1,7 +1,7 @@
 // ==========================================
-// PahadiRide Service Worker
+// ZipHill Service Worker
 // ==========================================
-const CACHE_NAME = 'pahadiride-v2';
+const CACHE_NAME = 'ziphill-v2';
 const STATIC_ASSETS = [
     '/index.html',
     '/search.html',
