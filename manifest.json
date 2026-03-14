@@ -4,10 +4,10 @@
   "description": "Uttarakhand Local Taxi Directory — Book rides directly with local drivers",
   "start_url": "/index.html",
   "scope": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
-  "background_color": "#f8fafc",
-  "theme_color": "#2563eb",
+  "background_color": "#f59e0b",
+  "theme_color": "#f59e0b",
   "icons": [
     {
       "src": "icon-192.png",
