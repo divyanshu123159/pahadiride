@@ -85,6 +85,16 @@
             <div id="pending-list"></div>
         </div>
 
+        <!-- Tab Switcher -->
+        <div style="display:flex;gap:8px;margin-bottom:1rem;">
+            <button id="tab-drivers" onclick="switchTab('drivers')" style="flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;cursor:pointer;background:#2563eb;color:white;">
+                <i class="fa-solid fa-car"></i> Taxi Drivers
+            </button>
+            <button id="tab-rentals" onclick="switchTab('rentals')" style="flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;cursor:pointer;background:#f1f5f9;color:#64748b;">
+                <i class="fa-solid fa-motorcycle"></i> Rental Owners
+            </button>
+        </div>
+
         <!-- All Drivers -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <h3 style="margin:0;font-size:1.1rem;"><i class="fa-solid fa-users" style="color:#2563eb;"></i> All Drivers</h3>
@@ -94,6 +104,12 @@
         </div>
         <input type="text" class="search-bar" id="driver-search" placeholder="🔍  Search by name, phone, or vehicle..." oninput="renderAllDrivers()">
         <div id="drivers-list"></div>
+
+        <!-- Rental Owners Section -->
+        <div id="rentals-section" style="display:none;">
+            <input type="text" class="search-bar" id="rental-search" placeholder="🔍 Search rental owners..." oninput="renderRentals()" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:1rem;box-sizing:border-box;">
+            <div id="rentals-list"><p style="text-align:center;color:#64748b;">Loading...</p></div>
+        </div>
 
     </main>
 
@@ -304,6 +320,109 @@
                 renderPendingDrivers();
                 renderAllDrivers();
             } catch (err) { alert("Failed to delete. Check connection."); }
+        }
+
+        // ── RENTAL SECTION ─────────────────────────────────────────
+        let allRentals = [];
+
+        function switchTab(tab) {
+            if (tab === 'drivers') {
+                document.getElementById('tab-drivers').style.background = '#2563eb';
+                document.getElementById('tab-drivers').style.color = 'white';
+                document.getElementById('tab-rentals').style.background = '#f1f5f9';
+                document.getElementById('tab-rentals').style.color = '#64748b';
+                document.getElementById('drivers-list').style.display = 'block';
+                document.getElementById('rentals-section').style.display = 'none';
+                document.getElementById('driver-search').style.display = 'block';
+            } else {
+                document.getElementById('tab-rentals').style.background = '#f59e0b';
+                document.getElementById('tab-rentals').style.color = 'white';
+                document.getElementById('tab-drivers').style.background = '#f1f5f9';
+                document.getElementById('tab-drivers').style.color = '#64748b';
+                document.getElementById('drivers-list').style.display = 'none';
+                document.getElementById('rentals-section').style.display = 'block';
+                document.getElementById('driver-search').style.display = 'none';
+                if (allRentals.length === 0) loadRentals();
+            }
+        }
+
+        async function loadRentals() {
+            document.getElementById('rentals-list').innerHTML = '<p style="text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
+            try {
+                const res = await fetch(databaseURL + "?action=getRentals&showAll=true");
+                allRentals = await res.json();
+                renderRentals();
+            } catch(e) {
+                document.getElementById('rentals-list').innerHTML = '<p style="text-align:center;color:red;">Failed to load rentals.</p>';
+            }
+        }
+
+        function renderRentals() {
+            const query = (document.getElementById('rental-search').value || '').toLowerCase();
+            const filtered = allRentals.filter(r =>
+                (r.name||'').toLowerCase().includes(query) ||
+                (r.phone||'').includes(query) ||
+                (r.model||'').toLowerCase().includes(query) ||
+                (r.location||'').toLowerCase().includes(query)
+            );
+            if (filtered.length === 0) {
+                document.getElementById('rentals-list').innerHTML = '<p style="text-align:center;color:#64748b;padding:2rem;">No rental owners found.</p>';
+                return;
+            }
+            // Group by phone
+            const grouped = {};
+            filtered.forEach(r => { if (!grouped[r.phone]) grouped[r.phone] = []; grouped[r.phone].push(r); });
+
+            document.getElementById('rentals-list').innerHTML = Object.values(grouped).map(vehicles => {
+                const r = vehicles[0];
+                return `<div style="background:white;border-radius:12px;padding:1rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid #f59e0b;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:1rem;">${r.name||'Unknown'}</strong>
+                            <span style="background:${r.status==='offline'?'#f1f5f9':'#dcfce7'};color:${r.status==='offline'?'#94a3b8':'#16a34a'};font-size:0.7rem;padding:2px 8px;border-radius:999px;margin-left:6px;">${r.status==='offline'?'Offline':'Online'}</span>
+                        </div>
+                        <div style="font-size:0.82rem;color:#64748b;"><i class="fa-solid fa-phone" style="width:14px;"></i> +91 ${r.phone}</div>
+                        <button onclick="deleteRental('${r.phone}','${(r.name||'').replace(/'/g,'')}')" style="background:#fee2e2;color:#ef4444;border:none;padding:6px 12px;border-radius:6px;font-size:0.8rem;cursor:pointer;">
+                            <i class="fa-solid fa-trash"></i> Remove
+                        </button>
+                    </div>
+                    ${vehicles.map(v => `
+                    <div style="background:${v.verified?'#f0fdf4':'#fffbeb'};border:1px solid ${v.verified?'#86efac':'#fcd34d'};border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                        <div>
+                            <div style="font-weight:600;font-size:0.9rem;">${v.vehicle_type} — ${v.model} ${v.verified?'<span style="background:#dcfce7;color:#16a34a;font-size:0.7rem;padding:2px 8px;border-radius:999px;">✅ Verified</span>':'<span style="background:#fef3c7;color:#92400e;font-size:0.7rem;padding:2px 8px;border-radius:999px;">🕐 Pending</span>'}</div>
+                            <div style="font-size:0.78rem;color:#64748b;">RC: ${v.rc_number} · ${v.location} · ₹${v.price_hour}/hr · ₹${v.price_day}/day</div>
+                        </div>
+                        <div style="display:flex;gap:6px;">
+                            <a href="https://wa.me/91${v.phone}?text=Hi ${encodeURIComponent(v.name)}, please send RC and owner ID for verification on ZipHill." target="_blank"
+                               style="background:#25d366;color:white;border:none;padding:6px 10px;border-radius:6px;font-size:0.8rem;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;">
+                               <i class="fa-brands fa-whatsapp"></i> Request Docs
+                            </a>
+                            ${v.verified
+                                ? `<button onclick="setRentalVerified('${v.phone}','${v.rc_number}',false)" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;padding:6px 10px;border-radius:6px;font-size:0.8rem;cursor:pointer;">✕ Unverify</button>`
+                                : `<button onclick="setRentalVerified('${v.phone}','${v.rc_number}',true)" style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:6px 10px;border-radius:6px;font-size:0.8rem;cursor:pointer;">✓ Verify</button>`}
+                        </div>
+                    </div>`).join('')}
+                </div>`;
+            }).join('');
+        }
+
+        async function setRentalVerified(phone, rc, val) {
+            try {
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:'rentalSetVerified', phone, rc_number:rc, verified:val })});
+                allRentals.forEach(r => { if (r.phone===phone && r.rc_number===rc) r.verified = val; });
+                renderRentals();
+                alert(val ? '✅ Rental vehicle verified!' : 'Vehicle unverified.');
+            } catch(e) { alert('Error.'); }
+        }
+
+        async function deleteRental(phone, name) {
+            if (!confirm('Remove all listings for ' + name + '?')) return;
+            try {
+                await fetch(databaseURL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:'rentalDelete', phone })});
+                allRentals = allRentals.filter(r => r.phone !== phone);
+                renderRentals();
+                alert('Removed.');
+            } catch(e) { alert('Error.'); }
         }
     </script>
 </body>
