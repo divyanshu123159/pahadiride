@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent a Vehicle | ZipHill</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f59e0b">
+    <style>
+        .rental-hero { background:linear-gradient(135deg,#f59e0b,#d97706); color:white; padding:2.5rem 1rem 2rem; text-align:center; }
+        .rental-hero h1 { font-size:1.8rem; margin-bottom:0.5rem; }
+        .rental-hero p { opacity:0.9; font-size:0.95rem; }
+        .filter-bar { background:white; padding:1rem; max-width:900px; margin:-1.5rem auto 1.5rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+        .filter-bar select, .filter-bar input { padding:0.7rem; border:1px solid #e2e8f0; border-radius:8px; font-size:0.9rem; background:#f8fafc; }
+        .filter-bar select { flex:1; min-width:130px; }
+        .filter-bar input[type=date] { flex:1; min-width:130px; }
+        .filter-btn { background:#f59e0b; color:white; border:none; padding:0.7rem 1.5rem; border-radius:8px; font-weight:700; cursor:pointer; white-space:nowrap; }
+        .results-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; max-width:900px; margin:0 auto; padding:0 1rem 3rem; }
+        .rental-card { background:white; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.08); border-top:4px solid #f59e0b; }
+        .rental-card-header { padding:1rem; }
+        .rental-card-body { padding:0 1rem 1rem; }
+        .rental-card-footer { padding:1rem; border-top:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
+        .type-badge { display:inline-flex; align-items:center; gap:6px; background:#fef3c7; color:#d97706; font-size:0.78rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+        .price-tag { font-size:1rem; font-weight:700; color:#d97706; }
+        .price-sub { font-size:0.75rem; color:#64748b; }
+        .btn-wa { background:#25d366; color:white; border:none; padding:0.6rem 1rem; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:0.4rem; }
+        .btn-call { background:#2563eb; color:white; border:none; padding:0.6rem 1rem; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:0.4rem; }
+        .badge-verified { background:#dcfce7; color:#16a34a; font-size:0.7rem; padding:2px 6px; border-radius:99px; font-weight:600; margin-left:4px; }
+        .empty-state { grid-column:1/-1; text-align:center; padding:3rem; background:white; border-radius:1rem; }
+        .loading-state { grid-column:1/-1; text-align:center; padding:3rem; color:#64748b; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Zip<span>Hill</span></a></div>
+    <div class="nav-links">
+        <a href="index.html" class="help-link">Home</a>
+        <button class="sign-in-btn" onclick="window.location.href='rental-dashboard.html'">
+            <i class="fa-solid fa-store"></i> My Rentals
+        </button>
+    </div>
+</nav>
+
+<div class="rental-hero">
+    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🛵</div>
+    <h1>Rent a Vehicle</h1>
+    <p>Bikes, Scooties & Cars available across Uttarakhand.<br>Contact owners directly — no booking fee!</p>
+</div>
+
+<!-- Filters -->
+<div class="filter-bar" style="padding:1.25rem;">
+    <select id="f-type" onchange="applyFilters()">
+        <option value="">All Vehicles</option>
+        <option value="Bike">🏍️ Bikes</option>
+        <option value="Scooty">🛵 Scooty</option>
+        <option value="Car">🚗 Cars</option>
+    </select>
+    <select id="f-location" onchange="applyFilters()">
+        <option value="">All Cities</option>
+        <option>Tehri Garhwal</option><option>New Tehri</option><option>Chamba</option>
+        <option>Narendra Nagar</option><option>Ghansali</option><option>Dehradun</option>
+        <option>Mussoorie</option><option>Rishikesh</option><option>Haridwar</option>
+        <option>Roorkee</option><option>Uttarkashi</option><option>Pauri</option>
+        <option>Kotdwar</option><option>Lansdowne</option><option>Srinagar</option>
+        <option>Rudraprayag</option><option>Gopeshwar</option><option>Joshimath</option>
+        <option>Nainital</option><option>Haldwani</option><option>Almora</option>
+        <option>Ranikhet</option><option>Pithoragarh</option><option>Munsiyari</option>
+        <option>Rudrapur</option><option>Kashipur</option><option>Ramnagar</option>
+    </select>
+    <input type="date" id="f-date" onchange="applyFilters()" min="">
+    <button class="filter-btn" onclick="applyFilters()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+</div>
+
+<div style="max-width:900px;margin:0 auto;padding:0 1rem 0.5rem;">
+    <p style="color:#64748b;font-size:0.9rem;" id="result-count"></p>
+</div>
+
+<div class="results-grid" id="results-grid">
+    <div class="loading-state"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;"></i><br><br>Loading available vehicles...</div>
+</div>
+
+<!-- Owner CTA -->
+<section style="max-width:900px;margin:0 auto 3rem;padding:0 1rem;">
+    <div style="background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:1rem;padding:2rem;color:white;text-align:center;">
+        <i class="fa-solid fa-motorcycle" style="font-size:2rem;margin-bottom:0.75rem;display:block;"></i>
+        <h2 style="font-size:1.4rem;margin-bottom:0.5rem;">Own a Bike, Scooty or Car?</h2>
+        <p style="opacity:0.9;margin-bottom:1.25rem;font-size:0.95rem;">List it for free and earn when it's not in use. Customers contact you directly!</p>
+        <button onclick="window.location.href='rental-signup.html'" style="background:white;color:#d97706;border:none;padding:0.85rem 2rem;border-radius:0.5rem;font-weight:700;font-size:1rem;cursor:pointer;">
+            <i class="fa-solid fa-plus"></i> List My Vehicle
+        </button>
+    </div>
+</section>
+
+<footer class="footer" style="margin-top:auto;">
+    <div class="footer-bottom" style="margin-top:0;padding-top:2rem;">
+        <p>&copy; 2026 ZipHill. Made with ❤️ in Tehri Garhwal.</p>
+    </div>
+</footer>
+
+<script>
+const GAS = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
+let allRentals = [];
+
+document.getElementById('f-date').min = new Date().toISOString().split('T')[0];
+
+async function loadRentals() {
+    try {
+        const res = await fetch(GAS + '?action=getRentals');
+        allRentals = await res.json();
+        applyFilters();
+    } catch(e) {
+        document.getElementById('results-grid').innerHTML = '<div class="empty-state"><h3 style="color:#64748b;">Connection error</h3><p style="color:#94a3b8;">Please try again later.</p></div>';
+    }
+}
+
+function applyFilters() {
+    const typeFilter  = document.getElementById('f-type').value;
+    const cityFilter  = document.getElementById('f-location').value;
+    const dateFilter  = document.getElementById('f-date').value;
+    const today       = new Date().toISOString().split('T')[0];
+    const grid        = document.getElementById('results-grid');
+
+    const filtered = allRentals.filter(r => {
+        if (typeFilter && r.vehicle_type !== typeFilter) return false;
+        if (cityFilter && r.location !== cityFilter) return false;
+        if (dateFilter && r.blocked_dates && r.blocked_dates !== 'none') {
+            const blocked = r.blocked_dates.split(',').map(d => d.trim()).filter(Boolean);
+            if (blocked.includes(dateFilter)) return false;
+        }
+        return true;
+    });
+
+    document.getElementById('result-count').textContent = filtered.length + ' vehicle(s) found';
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state">
+            <i class="fa-solid fa-motorcycle" style="font-size:2.5rem;color:#e2e8f0;display:block;margin-bottom:1rem;"></i>
+            <h3 style="color:#64748b;">No vehicles found</h3>
+            <p style="color:#94a3b8;">Try a different city or vehicle type.</p>
+            <button onclick="window.open('https://wa.me/917983447349?text=Hi ZipHill, I need a rental vehicle.','_blank')" style="background:#25d366;color:white;border:none;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;margin-top:1rem;font-size:0.95rem;">
+                <i class="fa-brands fa-whatsapp"></i> Ask Admin for Help
+            </button>
+        </div>`;
+        return;
+    }
+
+    const typeIcon = t => t === 'Bike' ? 'fa-motorcycle' : t === 'Scooty' ? 'fa-bicycle' : 'fa-car';
+
+    grid.innerHTML = filtered.map(r => {
+        const waMsg = encodeURIComponent(`Hi ${r.name}, I found your ${r.vehicle_type} (${r.model}) on ZipHill. I want to rent it. Please share details.`);
+        const avatar = r.photo
+            ? `<img src="${r.photo}" alt="${r.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+            : `<i class="fa-solid ${typeIcon(r.vehicle_type)}" style="font-size:1.4rem;color:#f59e0b;"></i>`;
+        return `
+        <div class="rental-card">
+            <div class="rental-card-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:52px;height:52px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${avatar}</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.95rem;">${r.name} ${r.verified ? '<span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>' : ''}</div>
+                        <div class="type-badge"><i class="fa-solid ${typeIcon(r.vehicle_type)}"></i> ${r.vehicle_type}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="rental-card-body">
+                <div style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">${r.model}</div>
+                <div style="font-size:0.82rem;color:#64748b;margin-bottom:8px;"><i class="fa-solid fa-location-dot" style="color:#f59e0b;width:14px;"></i> ${r.location || '—'}</div>
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                    ${r.price_hour && r.price_hour !== '0' ? `<div class="price-tag">₹${r.price_hour} <span class="price-sub">/ hour</span></div>` : ''}
+                    ${r.price_day  && r.price_day  !== '0' ? `<div class="price-tag">₹${r.price_day} <span class="price-sub">/ day</span></div>` : ''}
+                </div>
+            </div>
+            <div class="rental-card-footer">
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-wa" onclick="window.open('https://wa.me/91${r.phone}?text=${waMsg}','_blank')">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="btn-call" onclick="window.location.href='tel:+91${r.phone}'">
+                        <i class="fa-solid fa-phone"></i> Call
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+loadRentals();
+</script>
+</body>
+</html>
