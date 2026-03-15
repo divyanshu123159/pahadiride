@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Registration | ZipHill</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f59e0b">
+    <style>
+        .steps-bar { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:1.5rem; }
+        .step-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .step-circle { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; border:2px solid #e2e8f0; background:white; color:#94a3b8; transition:all 0.3s; }
+        .step-circle.active { border-color:#f59e0b; background:#f59e0b; color:white; }
+        .step-circle.done   { border-color:#10b981; background:#10b981; color:white; }
+        .step-label { font-size:0.65rem; color:#94a3b8; font-weight:600; text-transform:uppercase; }
+        .step-label.active { color:#f59e0b; }
+        .step-label.done   { color:#10b981; }
+        .step-line { width:50px; height:2px; background:#e2e8f0; margin-bottom:18px; }
+        .step-line.done { background:#10b981; }
+        .step-panel { display:none; }
+        .step-panel.active { display:block; }
+        .vehicle-type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:1rem 0; }
+        .vtype-card { border:2px solid #e2e8f0; border-radius:10px; padding:1rem 0.5rem; text-align:center; cursor:pointer; transition:all 0.2s; background:white; }
+        .vtype-card:hover, .vtype-card.selected { border-color:#f59e0b; background:#fffbeb; }
+        .vtype-card i { font-size:1.8rem; color:#f59e0b; display:block; margin-bottom:6px; }
+        .vtype-card span { font-size:0.8rem; font-weight:600; color:#1e293b; }
+    </style>
+</head>
+<body class="bg-gray">
+
+<nav class="navbar">
+    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">Zip<span>Hill</span></a></div>
+    <div class="nav-links">
+        <a href="rental.html" class="help-link"><i class="fa-solid fa-arrow-left"></i> Back</a>
+    </div>
+</nav>
+
+<main class="auth-container">
+    <div class="auth-card" style="max-width:32rem;">
+
+        <div class="auth-header">
+            <div style="display:flex;justify-content:center;margin-bottom:0.75rem;">
+                <div style="background:#fef3c7;color:#d97706;padding:0.6rem 1.4rem;border-radius:999px;font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:0.5rem;">
+                    <i class="fa-solid fa-motorcycle"></i> Rental Owner Registration
+                </div>
+            </div>
+            <h2>List Your Vehicle for Rent</h2>
+            <p>Register your bike, scooty or car and start earning.</p>
+        </div>
+
+        <div class="steps-bar">
+            <div class="step-item">
+                <div class="step-circle active" id="s1-circle">1</div>
+                <div class="step-label active" id="s1-label">Details</div>
+            </div>
+            <div class="step-line" id="line-1"></div>
+            <div class="step-item">
+                <div class="step-circle" id="s2-circle">2</div>
+                <div class="step-label" id="s2-label">Submit Docs</div>
+            </div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div class="step-panel active" id="step1">
+            <form id="rental-form" onsubmit="submitRental(event)" class="auth-form">
+
+                <div class="input-group">
+                    <label>Your Full Name</label>
+                    <input type="text" id="r-name" placeholder="e.g. Suresh Kumar" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Phone Number (10 digits)</label>
+                    <input type="tel" id="r-phone" pattern="[0-9]{10}" maxlength="10" placeholder="e.g. 9876543210" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Vehicle Type</label>
+                    <div class="vehicle-type-grid">
+                        <div class="vtype-card" onclick="selectType('Bike')" id="type-Bike">
+                            <i class="fa-solid fa-motorcycle"></i>
+                            <span>Bike</span>
+                        </div>
+                        <div class="vtype-card" onclick="selectType('Scooty')" id="type-Scooty">
+                            <i class="fa-solid fa-bicycle"></i>
+                            <span>Scooty</span>
+                        </div>
+                        <div class="vtype-card" onclick="selectType('Car')" id="type-Car">
+                            <i class="fa-solid fa-car"></i>
+                            <span>Car</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="r-type" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Vehicle Model</label>
+                    <input type="text" id="r-model" placeholder="e.g. Royal Enfield, Activa, Swift" required>
+                </div>
+
+                <div class="input-group">
+                    <label>RC Number</label>
+                    <input type="text" id="r-rc" placeholder="e.g. UK07AB1234" maxlength="12" required
+                        oninput="this.value = this.value.toUpperCase().replace(/\s/g,'')">
+                    <small style="color:#64748b;font-size:0.78rem;">Format: UK07AB1234</small>
+                </div>
+
+                <div class="input-group">
+                    <label>Your City / Location</label>
+                    <select id="r-location" required>
+                        <option value="">Select your city</option>
+                        <option>Tehri Garhwal</option><option>New Tehri</option><option>Chamba</option>
+                        <option>Narendra Nagar</option><option>Ghansali</option><option>Dehradun</option>
+                        <option>Mussoorie</option><option>Rishikesh</option><option>Haridwar</option>
+                        <option>Roorkee</option><option>Uttarkashi</option><option>Pauri</option>
+                        <option>Kotdwar</option><option>Lansdowne</option><option>Srinagar</option>
+                        <option>Rudraprayag</option><option>Gopeshwar</option><option>Joshimath</option>
+                        <option>Nainital</option><option>Haldwani</option><option>Almora</option>
+                        <option>Ranikhet</option><option>Pithoragarh</option><option>Munsiyari</option>
+                        <option>Rudrapur</option><option>Kashipur</option><option>Ramnagar</option>
+                    </select>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div class="input-group">
+                        <label>Price per Hour (₹)</label>
+                        <input type="number" id="r-price-hour" placeholder="e.g. 100" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Price per Day (₹)</label>
+                        <input type="number" id="r-price-day" placeholder="e.g. 600" min="0">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Vehicle Photo URL (optional)</label>
+                    <input type="url" id="r-photo" placeholder="https://...">
+                    <small style="color:#64748b;font-size:0.78rem;">Upload photo to Google Drive/ImgBB and paste link</small>
+                </div>
+
+                <div class="input-group">
+                    <label>Set a Password</label>
+                    <input type="password" id="r-password" placeholder="Min 6 characters" minlength="6" required>
+                </div>
+
+                <div style="display:flex;align-items:flex-start;gap:10px;margin:1rem 0;padding:0.85rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                    <input type="checkbox" id="r-terms" style="margin-top:3px;width:16px;height:16px;accent-color:#f59e0b;" required>
+                    <label for="r-terms" style="font-size:0.85rem;color:#475569;cursor:pointer;">
+                        I agree to Terms & Conditions. I confirm this vehicle is legally mine to rent.
+                    </label>
+                </div>
+
+                <p id="r-error" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.75rem;display:none;">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="r-error-msg"></span>
+                </p>
+
+                <button type="submit" class="proceed-btn auth-btn" id="r-btn" style="background:#f59e0b;">
+                    <i class="fa-solid fa-motorcycle"></i> Register My Vehicle
+                </button>
+            </form>
+            <div class="auth-footer">
+                <p>Already registered? <a href="rental-dashboard.html">Sign In to Dashboard</a></p>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-panel" id="step2">
+            <div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #6ee7b7;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem;">
+                <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
+                <h3 style="color:#065f46;margin-bottom:0.25rem;">Registered Successfully!</h3>
+                <p style="color:#047857;font-size:0.9rem;">Now send your RC + Owner ID to admin for verification.</p>
+            </div>
+
+            <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:1rem;margin-bottom:1.25rem;">
+                <p style="color:#92400e;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem;">
+                    <i class="fa-solid fa-clock"></i> Pending Verification
+                </p>
+                <p style="color:#78350f;font-size:0.82rem;">
+                    Send your <strong>RC book photo + any owner ID</strong> (Aadhaar/driving licence) to admin. Your listing goes live after verification.
+                </p>
+            </div>
+
+            <button onclick="sendDocs()" class="proceed-btn auth-btn" style="background:#25d366;margin-bottom:1rem;">
+                <i class="fa-brands fa-whatsapp"></i> Send RC + ID to Admin
+            </button>
+
+            <button onclick="window.location.href='rental-dashboard.html'" class="proceed-btn auth-btn" style="background:#f1f5f9;color:#1e293b;border:1px solid #e2e8f0;">
+                <i class="fa-solid fa-gauge"></i> Go to My Dashboard
+            </button>
+        </div>
+
+    </div>
+</main>
+
+<script>
+const GAS = "https://script.google.com/macros/s/AKfycbw30qgkPH8ljRmoCpB1XV6zIaiD5PcKsU1HFt1KWEkZ4KM2pVCEMlJbW9g4kYjIo_c/exec";
+let regData = {};
+
+if (localStorage.getItem('zipHillRentalUser')) window.location.href = 'rental-dashboard.html';
+
+function selectType(type) {
+    document.querySelectorAll('.vtype-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('type-' + type).classList.add('selected');
+    document.getElementById('r-type').value = type;
+}
+
+async function submitRental(e) {
+    e.preventDefault();
+    const name     = document.getElementById('r-name').value.trim();
+    const phone    = document.getElementById('r-phone').value.trim();
+    const type     = document.getElementById('r-type').value;
+    const model    = document.getElementById('r-model').value.trim();
+    const rc       = document.getElementById('r-rc').value.toUpperCase().replace(/\s/g,'');
+    const location = document.getElementById('r-location').value;
+    const priceH   = document.getElementById('r-price-hour').value || '0';
+    const priceD   = document.getElementById('r-price-day').value || '0';
+    const photo    = document.getElementById('r-photo').value || '';
+    const password = document.getElementById('r-password').value;
+    const errEl    = document.getElementById('r-error');
+    const errMsg   = document.getElementById('r-error-msg');
+    const btn      = document.getElementById('r-btn');
+
+    if (!type) { errEl.style.display='block'; errMsg.textContent='Please select a vehicle type.'; return; }
+
+    const rcPattern = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+    if (!rcPattern.test(rc)) { errEl.style.display='block'; errMsg.textContent='Invalid RC Number! Use format: UK07AB1234'; return; }
+
+    errEl.style.display = 'none';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering...';
+    btn.disabled  = true;
+
+    try {
+        await fetch(GAS, {
+            method:'POST', mode:'no-cors',
+            body: JSON.stringify({ action:'rentalSignup', name, phone, vehicle_type:type,
+                model, rc_number:rc, location, price_hour:priceH, price_day:priceD, photo, password })
+        });
+
+        regData = { name, phone, type, model, rc, location };
+        localStorage.setItem('zipHillRentalUser', phone);
+        localStorage.setItem('zipHillRentalPass', password);
+
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+        document.getElementById('s1-circle').className = 'step-circle done';
+        document.getElementById('s1-circle').innerHTML = '<i class="fa-solid fa-check"></i>';
+        document.getElementById('s1-label').className  = 'step-label done';
+        document.getElementById('line-1').classList.add('done');
+        document.getElementById('s2-circle').classList.add('active');
+        document.getElementById('s2-label').classList.add('active');
+
+    } catch(err) {
+        errEl.style.display = 'block';
+        errMsg.textContent  = 'Connection error. Please try again.';
+        btn.innerHTML = '<i class="fa-solid fa-motorcycle"></i> Register My Vehicle';
+        btn.disabled  = false;
+    }
+}
+
+function sendDocs() {
+    const { name, phone, type, model, rc, location } = regData;
+    const msg = encodeURIComponent(
+        `Hi ZipHill Admin, I just registered as a rental owner and need verification.\n\nName: ${name}\nPhone: ${phone}\nVehicle: ${type} — ${model}\nRC: ${rc}\nLocation: ${location}\n\n[Attaching RC photo + Owner ID]`
+    );
+    window.open('https://wa.me/917983447349?text=' + msg, '_blank');
+}
+</script>
+</body>
+</html>
