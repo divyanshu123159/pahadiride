@@ -123,11 +123,10 @@
                             💡 Choose <strong>Both</strong> to appear in seat sharing search AND full car booking
                         </small>
                     </div>
-                    <p id="route-note" style="font-size:0.8rem;color:#475569;background:#f1f5f9;padding:8px 12px;border-radius:6px;margin-bottom:8px;display:none;"></p>
                     <div class="form-row" id="route-row">
                         <div class="input-group">
                             <label>From</label>
-                            <select id="v-from" required>
+                            <select id="v-from">
                                     <option value="Almora">Almora</option>
                                     <option value="Augustmuni">Augustmuni</option>
                                     <option value="Badrinath">Badrinath</option>
@@ -184,7 +183,7 @@
                         </div>
                         <div class="input-group">
                             <label>To</label>
-                            <select id="v-to" required>
+                            <select id="v-to">
                                     <option value="Almora">Almora</option>
                                     <option value="Augustmuni">Augustmuni</option>
                                     <option value="Badrinath">Badrinath</option>
@@ -444,8 +443,6 @@
             // Set min date to today so driver cant pick past dates
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('v-available-date').min = today;
-            // Reset route row visibility
-            adjustFields();
             if (mode === 'edit' && index !== null) {
                 const c = myFleet[index];
                 document.getElementById('v-model').value     = c.vehicle    || '';
@@ -462,6 +459,8 @@
                 document.getElementById('v-available-date').value      = flex ? '' : c.available_date;
                 document.getElementById('v-available-date').disabled   = flex;
             }
+            // Call AFTER setting type so route row shows/hides correctly
+            adjustFields();
         }
 
         function closeModal()  { document.getElementById('vehicle-modal').style.display = 'none'; }
